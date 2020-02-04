@@ -18,36 +18,37 @@
 
 #### CAMPOS
 
-budat	data de lançamento
-monat	periodo
-bukrs	empresa
-werks	centro
-blart	tipo de documento
-bldat	data de documento
-waers	moeda
-kursf(12)	taxa de conversao
-bktxt	texto cabeçalho
-xblnr	referencia
-bschl	chave de lancamento
-newko	conta contabil
-newnum	indicacao do razao
-wrbtr	montante
-zfbdt	data base
-zterm	Cond. de pagamento
-matnr	material
-kostl	centro de custo
-prctr	centro de lucro
-aufnr	ordem interna
-zuonr	atribuicao
-sgtxt	texto do item
-bupla	local de negocio
-ebeln	documento de material
-xref3	chav referencia
-anfbn	nsolicitacao
-anfbu	empresa solicitação
-anfbj	ano solicitacao
-hbkid	banco empresa
-zlsch	forma de pagamento
+anfbj	bseg-anfbj	ano solicitacao	null <br>
+anfbn	bseg-anfbn	nsolicitacao	null <br>
+anfbu	bseg-anfbu	empresa solicitação	null <br>
+aufnr	bseg-aufnr	ordem interna	null <br>
+bktxt	bkpf-bktxt	texto cabeçalho	null <br>
+blart	bkpf-blart	tipo de documento	AB <br>
+bldat	bkpf-bldat	data de documento	31122019 <br>
+bschl	bseg-bschl	chave de lancamento	40 <br>
+budat	bkpf-budat	data de lançamento	31122019
+bukrs	bkpf-bukrs	empresa	COMP
+bupla	bseg-bupla	local de negocio	0001
+ebeln	bseg-ebeln	documento de material	null
+end of ty_arq			
+hbkid	bseg-hbkid	banco empresa	null
+kostl	bseg-kostl	centro de custo	null
+kursf(12)	c	taxa de conversao	null
+matnr	bseg-matnr	material	
+monat	bkpf-monat	periodo	12
+newko	bbseg-newko	conta contabil	113010001
+newnum	bbseg-newum	indicacao do razao	null
+prctr	bseg-prctr	centro de lucro	null
+sgtxt	bseg-sgtxt	texto do item	VLR TRANSF ICMS NF 221331
+waers	bkpf-waers	moeda	BRL
+werks	bseg-werks	centro	CM01
+wrbtr	bseg-wrbtr	montante	261.04
+xblnr	bkpf-xblnr	referencia	221331
+xref3	bseg-xref3	chav referencia	null
+zfbdt	bseg-zfbdt	data base	31122019
+zlsch	bseg-zlsch	forma de pagamento	null
+zterm	bseg-zterm	Cond. de pagamento	null
+zuonr	bseg-zuonr	atribuicao	221331
 
 
 ##### DNOTIFICADOR: Armazena informacoes relativas ao notificador (pessoa que abre a SSI).<br>
