@@ -1,8 +1,8 @@
-# 9000075165, Ajuste programa de carga de doc contabil
+# 9000075165 - Ajuste programa de carga de doc contabil
 
 ### DESCRIÇÃO DOS DADOS
 ---
-#### TABELA FATO
+#### TABELAS 
 
 ##### FPESQUISA
 * **ID_Processador:** Identificador do processador.<br>
