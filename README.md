@@ -18,7 +18,7 @@
 
 #### CAMPOS
 
-Nome Tecnico	Tipo	Descrição 	          Exemplo
+Nome Tecnico |	Tipo	  |Descrição 	     |     Exemplo
 :----------- | ----------|-------------------|-----------:
 anfbj	    |bseg-anfbj	|ano solicitacao	|null 
 
