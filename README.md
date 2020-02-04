@@ -16,7 +16,39 @@
 * **Data_Encerramento_SSI:** Armazena a data que a SSI foi encerrada.<br>
     - Tipo de dados: Qualquer.
 
-#### TABELAS
+#### CAMPOS
+
+budat	data de lançamento
+monat	periodo
+bukrs	empresa
+werks	centro
+blart	tipo de documento
+bldat	data de documento
+waers	moeda
+kursf(12)	taxa de conversao
+bktxt	texto cabeçalho
+xblnr	referencia
+bschl	chave de lancamento
+newko	conta contabil
+newnum	indicacao do razao
+wrbtr	montante
+zfbdt	data base
+zterm	Cond. de pagamento
+matnr	material
+kostl	centro de custo
+prctr	centro de lucro
+aufnr	ordem interna
+zuonr	atribuicao
+sgtxt	texto do item
+bupla	local de negocio
+ebeln	documento de material
+xref3	chav referencia
+anfbn	nsolicitacao
+anfbu	empresa solicitação
+anfbj	ano solicitacao
+hbkid	banco empresa
+zlsch	forma de pagamento
+
 
 ##### DNOTIFICADOR: Armazena informacoes relativas ao notificador (pessoa que abre a SSI).<br>
 * **ID_Notificador:** Identificador do notificador.<br>
