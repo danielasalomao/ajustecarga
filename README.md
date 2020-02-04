@@ -18,9 +18,13 @@
 
 #### CAMPOS
 
-Nome Tecnico	Tipo (TYPE)	Descrição 	Exemplo
---------------- | ----------|----------|-----------
-anfbj	|bseg-anfbj	|ano solicitacao	|null 
+Nome Tecnico	Tipo	Descrição 	          Exemplo
+----------- | ----------|-------------------|-----------
+anfbj	    |bseg-anfbj	|ano solicitacao	|null 
+
+
+
+.<BR>
 anfbn	bseg-anfbn	nsolicitacao	null <br>
 anfbu	bseg-anfbu	empresa solicitação	null <br>
 aufnr	bseg-aufnr	ordem interna	null <br>
