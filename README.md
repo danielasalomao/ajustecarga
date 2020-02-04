@@ -26,29 +26,29 @@ bktxt	bkpf-bktxt	texto cabeçalho	null <br>
 blart	bkpf-blart	tipo de documento	AB <br>
 bldat	bkpf-bldat	data de documento	31122019 <br>
 bschl	bseg-bschl	chave de lancamento	40 <br>
-budat	bkpf-budat	data de lançamento	31122019
-bukrs	bkpf-bukrs	empresa	COMP
-bupla	bseg-bupla	local de negocio	0001
-ebeln	bseg-ebeln	documento de material	null
-end of ty_arq			
-hbkid	bseg-hbkid	banco empresa	null
-kostl	bseg-kostl	centro de custo	null
-kursf(12)	c	taxa de conversao	null
-matnr	bseg-matnr	material	
-monat	bkpf-monat	periodo	12
-newko	bbseg-newko	conta contabil	113010001
-newnum	bbseg-newum	indicacao do razao	null
-prctr	bseg-prctr	centro de lucro	null
-sgtxt	bseg-sgtxt	texto do item	VLR TRANSF ICMS NF 221331
-waers	bkpf-waers	moeda	BRL
-werks	bseg-werks	centro	CM01
-wrbtr	bseg-wrbtr	montante	261.04
-xblnr	bkpf-xblnr	referencia	221331
-xref3	bseg-xref3	chav referencia	null
-zfbdt	bseg-zfbdt	data base	31122019
-zlsch	bseg-zlsch	forma de pagamento	null
-zterm	bseg-zterm	Cond. de pagamento	null
-zuonr	bseg-zuonr	atribuicao	221331
+budat	bkpf-budat	data de lançamento	31122019 <br>
+bukrs	bkpf-bukrs	empresa	COMP <br>
+bupla	bseg-bupla	local de negocio	0001 <br>
+ebeln	bseg-ebeln	documento de material	null <br>
+end of ty_arq			 <br>
+hbkid	bseg-hbkid	banco empresa	null <br>
+kostl	bseg-kostl	centro de custo	null <br>
+kursf(12)	c	taxa de conversao	null <br>
+matnr	bseg-matnr	material	 <br>
+monat	bkpf-monat	periodo	12 <br>
+newko	bbseg-newko	conta contabil	113010001 <br>
+newnum	bbseg-newum	indicacao do razao	null <br>
+prctr	bseg-prctr	centro de lucro	null <br>
+sgtxt	bseg-sgtxt	texto do item	VLR TRANSF ICMS NF 221331 <br>
+waers	bkpf-waers	moeda	BRL <br>
+werks	bseg-werks	centro	CM01 <br>
+wrbtr	bseg-wrbtr	montante	261.04 <br>
+xblnr	bkpf-xblnr	referencia	221331 <br>
+xref3	bseg-xref3	chav referencia	null <br>
+zfbdt	bseg-zfbdt	data base	31122019 <br>
+zlsch	bseg-zlsch	forma de pagamento	null <br>
+zterm	bseg-zterm	Cond. de pagamento	null <br>
+zuonr	bseg-zuonr	atribuicao	221331 <br>
 
 
 ##### DNOTIFICADOR: Armazena informacoes relativas ao notificador (pessoa que abre a SSI).<br>
