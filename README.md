@@ -39,9 +39,9 @@
 
 ### ZRFI_PARTIDAS_ABERTASF01_CPY
 
-#### TELA DE SELEÇÃO
+#### * TELA DE SELEÇÃO
 
-#### PERFORM:
+#### * PERFORM:
 
 ##### FORM F_UPLOAD
 
