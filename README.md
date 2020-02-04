@@ -40,7 +40,7 @@ monat	    |bkpf-monat	|periodo	|12
 newko	    |bbseg-newko	|conta contabil	|113010001 
 newnum	    |bbseg-newum	|indicacao do razao	|null 
 prctr	    |bseg-prctr	|centro de lucro	|null 
-sgtxt	    |bseg-sgtxt	|texto do item	VLR TRANSF ICMS NF 221331
+sgtxt	    |bseg-sgtxt	|texto do item	|VLR TRANSF ICMS NF 221331
 waers	    |bkpf-waers	|moeda|	BRL 
 werks	    |bseg-werks	|centro	|CM01 
 wrbtr	    |bseg-wrbtr	|montante|	261.04 
