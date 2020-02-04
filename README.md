@@ -83,7 +83,11 @@
     - Tipo de dados: Texto.
     
 
-### PERFORM:
+### ZRFI_PARTIDAS_ABERTASF01_CPY
+
+#### TELA DE SELEÇÃO
+
+#### PERFORM:
 
 FORM F_UPLOAD
 
