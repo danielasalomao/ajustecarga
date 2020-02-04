@@ -33,7 +33,11 @@
     - Tipo de dados: 
 * **Gestor:** É gestor? .<br>
     - Tipo de dados:
-   
+
+## ZRFI_PARTIDAS_ABERTAS_CPY
+
+
+### ZRFI_PARTIDAS_ABERTASTOP_CPY
 
     
 
