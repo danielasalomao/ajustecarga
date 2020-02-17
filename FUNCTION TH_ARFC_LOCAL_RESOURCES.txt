@@ -1,0 +1,26 @@
+FUNCTION TH_ARFC_LOCAL_RESOURCES.
+*"----------------------------------------------------------------------
+*"*"Lokale Schnittstelle:
+*"  IMPORTING
+*"     REFERENCE(CHECK_CLIENT_ONLY) LIKE  SY-INDEX DEFAULT 0
+*"     VALUE(TRACE) TYPE  I DEFAULT 0
+*"  EXPORTING
+*"     VALUE(NORES) TYPE  I
+*"     VALUE(WAIT) TYPE  I
+*"     VALUE(REASON) TYPE  C
+*"     VALUE(MAXRES) TYPE  I
+*"     VALUE(IREASON) TYPE  I
+*"----------------------------------------------------------------------
+
+  DATA: TECH_REASON(255) TYPE C.
+
+  CALL 'ThSysInfo' ID 'OPCODE'            FIELD OPCODE_LOCAL_RESOURCES
+                   ID 'NORES'             FIELD NORES
+                   ID 'MAXRES'            FIELD MAXRES
+                   ID 'WAIT'              FIELD WAIT
+                   ID 'IREASON'           FIELD IREASON
+                   ID 'REASON'            FIELD TECH_REASON
+                   ID 'CHECK_CLIENT_ONLY' FIELD CHECK_CLIENT_ONLY
+                   ID 'TRACE'             FIELD TRACE.
+  PERFORM GET_REASON_TEXT USING IREASON CHANGING REASON.
+ENDFUNCTION.
