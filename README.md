@@ -70,10 +70,14 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
 ##### FORM F_UPLOAD
 
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_upload.txt)
+ 
+ * Lê o arquivo.
 
 ##### FORM F_TVARV
 
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_tvarv.txt)
+ 
+ * Recebe valores da TVARV.
 
 ##### FORM F_TRATA_ARQUIVO
 
@@ -129,6 +133,8 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
 ##### FORM F_LIMPA_VAR
 
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_limpa_var.txt)
+ 
+ * Limpa variáveis e tabelas internas.
 
 ##### FORM F_CONVERSION_EXIT_ALPHA_INPUT
 
