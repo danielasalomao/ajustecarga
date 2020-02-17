@@ -39,18 +39,9 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
 ##### DNOTIFICADOR: Armazena informacoes relativas ao notificador (pessoa que abre a SSI).<br>
 * **ID_Notificador:** Identificador do notificador.<br>
     - Tipo de dados: Número Decimal.
-* **Nome:** Armazena nome do notificador.<br>
-    - Tipo de dados: Texto.
-* **Departamento:** Armazena o departamento que o usuário pertence.<br>
-    - Tipo de dados: Texto.
-* **Diretoria:** Armazena a diretoria que o funcionário trabalha.<br>
-    - Tipo de dados: Texto.
-* **Empresa:** Armazena nome da empresa.<br>
-    - Tipo de dados: Texto.
-* **Usuario_Chave:** É usuário chave?<br>
-    - Tipo de dados: 
-* **Gestor:** É gestor? .<br>
-    - Tipo de dados:
+
+
+
 
 ## ZRFI_PARTIDAS_ABERTAS_CPY
 
@@ -76,6 +67,8 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_tvarv.txt)
 
 ##### FORM F_TRATA_ARQUIVO
+
+ [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_trata_arquivo.txt)
 
 ##### FORM F_FIM_BAPI
 
