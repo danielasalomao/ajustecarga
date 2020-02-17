@@ -69,6 +69,12 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
 ##### FORM F_TRATA_ARQUIVO
 
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_trata_arquivo.txt)
+ 
+ * **Funções chamadas:**<br>
+    - T
+    - T  
+    - T    
+ 
 
 ##### FORM F_FIM_BAPI
 
