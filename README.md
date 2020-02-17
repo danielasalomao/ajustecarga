@@ -89,7 +89,7 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_fim_bapi.txt)
  
   * **Funções:**<br>
-   - Recebe resultados da ZFFI_CARGA_PARTIDA_ABERTA - 464
+      - Recebe resultados da ZFFI_CARGA_PARTIDA_ABERTA - 464
 
 ##### FORM F_TRATA_ARQUIVO_VERIFICA_ERRO
 
@@ -100,7 +100,8 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_cria_alv.txt)
  
    * **Funções chamadas:**<br>
-   - REUSE_ALV_GRID_DISPLAY - 590
+   
+       - REUSE_ALV_GRID_DISPLAY - 590
    
    [Código]( https://github.com/danielasalomao/ajustecarga/blob/master/function%20reuse_alv_grid_display.txt)
 
@@ -133,8 +134,8 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
   [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_exibir_popup_erros.txt)
   
   * **Funções chamadas:**<br>
-   - CONVERSION_EXIT_ALPHA_INPUT - 950
-   - POPUP_WITH_TABLE_DISPLAY_OK - 968
+     - CONVERSION_EXIT_ALPHA_INPUT - 950
+     - POPUP_WITH_TABLE_DISPLAY_OK - 968
    
        [Código](https://github.com/danielasalomao/ajustecarga/blob/master/FUNCTION%20POPUP_WITH_TABLE_DISPLAY_OK.txt)
  
