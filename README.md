@@ -1,6 +1,6 @@
 # 9000075165 - Ajuste programa de carga de doc contabil
 
-#### CAMPOS
+## CAMPOS
 
 Nome Tecnico  |Tipo	        |Descrição 	          |Exemplo
 :-----------: | :----------:|:-------------------:|:-----------:
@@ -36,20 +36,17 @@ zterm	    |bseg-zterm	|Cond. de pagamento	|null
 zuonr	    |bseg-zuonr|	atribuicao|	221331 
 
 
-##### DNOTIFICADOR: Armazena informacoes relativas ao notificador (pessoa que abre a SSI).<br>
-* **ID_Notificador:** Identificador do notificador.<br>
-    - Tipo de dados: Número Decimal.
-
+## CÓDIGO
 
 
 
 ## ZRFI_PARTIDAS_ABERTAS_CPY
 
- [Código](https://github.com/danielasalomao/ajustecarga/blob/master/Include_ZRFI_PARTIDASTOP_CPY.txt)
+
 
 ### INCLUDE ZRFI_PARTIDAS_ABERTASTOP_CPY.
 
-    
+ [Código](https://github.com/danielasalomao/ajustecarga/blob/master/Include_ZRFI_PARTIDASTOP_CPY.txt)    
 
 ### INCLUDE ZRFI_PARTIDAS_ABERTASF01_CPY.
 
