@@ -72,8 +72,16 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
  
  * **Funções chamadas:**<br>
     - TH_ARFC_LOCAL_RESOURCES - 183, 394
-    - ZFFI_CARGA_PARTIDA_ABERTA - 191, 402   
+    
+    [Código](https://github.com/danielasalomao/ajustecarga/blob/master/FUNCTION%20TH_ARFC_LOCAL_RESOURCES.txt)
+    
+    - ZFFI_CARGA_PARTIDA_ABERTA - 191, 402  
+    
+    [Código](https://github.com/danielasalomao/ajustecarga/blob/master/FUNCTION%20zffi_carga_partida_aberta.txt)
+    
     - CONVERSION_EXIT_ALPHA_INPUT - 259, 327   
+    
+    [Código](https://github.com/danielasalomao/ajustecarga/blob/master/FUNCTION%20CONVERSION_EXIT_ALPHA_INPUT.txt)
  
 
 ##### FORM F_FIM_BAPI
