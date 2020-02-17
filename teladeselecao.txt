@@ -1,0 +1,4 @@
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE text-001.     ""Selecione o arquivo.
+PARAMETERS: p_path  TYPE string OBLIGATORY,   " Caminho
+            p_teste AS CHECKBOX TYPE c DEFAULT ' '.
+SELECTION-SCREEN END OF BLOCK b1.
