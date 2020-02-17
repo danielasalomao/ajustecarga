@@ -71,9 +71,9 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_trata_arquivo.txt)
  
  * **Funções chamadas:**<br>
-    - T
-    - T  
-    - T    
+    - TH_ARFC_LOCAL_RESOURCES - 183, 394
+    - ZFFI_CARGA_PARTIDA_ABERTA - 191, 402   
+    - CONVERSION_EXIT_ALPHA_INPUT - 259, 327   
  
 
 ##### FORM F_FIM_BAPI
