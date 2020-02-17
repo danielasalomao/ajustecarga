@@ -1,0 +1,9 @@
+FORM f_conversion_exit_alpha_input CHANGING cp_valor TYPE any.
+
+  CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+    EXPORTING
+      input  = cp_valor
+    IMPORTING
+      output = cp_valor.
+
+ENDFORM.

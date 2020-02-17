@@ -1,0 +1,10 @@
+FORM f_conversion_exit_sdate_input USING    ip_entrada TYPE any
+                                   CHANGING cp_saida   TYPE any.
+
+  CALL FUNCTION 'CONVERSION_EXIT_SDATE_INPUT'
+    EXPORTING
+      input  = ip_entrada
+    IMPORTING
+      output = cp_saida.
+
+ENDFORM.
