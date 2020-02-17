@@ -1,0 +1,110 @@
+************************************************************************
+* Nome do Report  : ZRFI_PARTIDAS_ABERTAS                              *
+* Transação       : ZRFI_PARTIDASABERTO                                *
+* Data Criação    : 11/02/2016                                         *
+* Autor           : Mario Cavalari                                     *
+* Espec.          : Partidas Abertas Clientes Fornecedores Saldo GL    *
+* Objetivo        : Envio de partidas abertas                          *
+* Solicitante     : Felipe Hippólito Moreira                           *
+* Projeto         : Projeto Êxodo                                      *
+*----------------------------------------------------------------------*
+* Ultima Modific. : William Alex                                       *
+* Data            : 03.06.2016                                         *
+* Especificação   : Acrecimo de campos                                 *
+* Objetivo        : N/A                                                *
+* Solicitante     : N/A                                                *
+* Projeto         : N/A                                                *
+************************************************************************
+
+*----------------------------------------------------------------------*
+* Includes
+*----------------------------------------------------------------------*
+
+INCLUDE ZRFI_PARTIDAS_ABERTASTOP_CPY.
+*INCLUDE zrfi_partidas_abertastop.
+*INCLUDE zrfi_partidas_abertastop.  " TOP Include
+INCLUDE ZRFI_PARTIDAS_ABERTASF01_CPY.
+*INCLUDE zrfi_partidas_abertasf01.
+*INCLUDE zrfi_partidas_abertasf01.  " FORMs Include
+
+*----------------------------------------------------------------------*
+* START-OF-SELECTION
+*----------------------------------------------------------------------*
+* Processamento principal do programa
+*----------------------------------------------------------------------*
+START-OF-SELECTION.
+
+  " Limpa variáveis e tabelas internas.
+  PERFORM f_limpa_var.
+
+  " Recebe valores da TVARV
+  PERFORM f_tvarv.
+
+  " Lê o arquivo.
+  PERFORM f_upload.
+
+  " Trata o arquivo e grava na tabela.
+ " PERFORM f_trata_arquivo.
+
+  "Trata arquivo
+  "Verifica se algum documento contem erro.
+  "Commit apenas se todos ok.
+  PERFORM f_trata_arquivo_verifica_erro.
+
+"  WAIT UNTIL vg_rcv_jobs EQ vg_snd_jobs.
+
+
+
+  " Chama a tela do ALV com os documentos NÃO gravados.
+  PERFORM f_cria_alv.
+
+* Elementos de texto
+*----------------------------------------------------------
+* F01	Status
+* F02	Data no documento
+* F03	Empresa
+* F04	Data de lançamento no documento
+* F05	Mês do exercício
+* F06	Tipo de documento
+* F07	Moeda
+* F08	Nº documento de referência
+* F09	Texto de cabeçalho de documento
+* F10	Chave de lançamento
+* F11	Conta
+* F12	Montante
+* F13	Taxa de conversão
+* F14	Indicação de Razão Especial
+* F15	Data base
+* F16	Centro de Custo
+* F17	Centro de Lucro
+* F18	Ordem Interna
+* F19	Atribuição
+* F20	Texto do Item
+* F21	Mensagem de Log
+
+* Textos de seleção
+*----------------------------------------------------------
+* P_PATH Caminho
+
+*BCI:RRUBINO: Melhoria carga ZRFI_PARTIDAS_ABERTAS - 17.01.2019 - Inicio
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_path.
+  DATA gd_subrc TYPE i.
+  DATA it_file TYPE filetable.
+
+  CALL METHOD cl_gui_frontend_services=>file_open_dialog
+    EXPORTING
+      window_title            = 'Selecione o arquivo de carga no formato csv'
+      default_extension       = '*.csv'
+      file_filter             = 'Separado por ; (*.csv)|*.csv|'
+    CHANGING
+      file_table              = it_file
+      rc                      = gd_subrc
+    EXCEPTIONS
+      file_open_dialog_failed = 1
+      cntl_error              = 2
+      error_no_gui            = 3
+      OTHERS                  = 4.
+  IF sy-subrc = 0.
+    READ TABLE it_file INDEX 1 INTO p_path.
+  ENDIF.
+*BCI:RRUBINO: Melhoria carga ZRFI_PARTIDAS_ABERTAS - 17.01.2019 - Fim
