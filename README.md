@@ -137,10 +137,18 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
 #### K - FORM F_CONVERSION_EXIT_ALPHA_INPUT
 
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_conversion_exit_alpha_input.txt)
+ 
+ * **Funções chamadas:**<br>
+    - CONVERSION_EXIT_ALPHA_INPUT - 808
+     [Código](
 
 #### L - FORM F_CONVERSION_EXIT_SDATE_INPUT
 
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_conversion_exit_sdate_input.txt)
+ 
+ * **Funções chamadas:**<br>
+    - CONVERSION_EXIT_SDATE_INPUT - 825
+     [Código](
 
 #### M - FORM F_FORMATAR_DADOS_ARQUIVO
 
