@@ -87,18 +87,24 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
 ##### FORM F_FIM_BAPI
 
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_fim_bapi.txt)
+ 
+  * **Funções:**<br>
+   - Recebe resultados da ZFFI_CARGA_PARTIDA_ABERTA - 464
 
 ##### FORM F_TRATA_ARQUIVO_VERIFICA_ERRO
 
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_trata_arquivo_verfifica_erro.txt)
 
-##### FORM_F_CRIA_ALV
+#### FORM_F_CRIA_ALV
 
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_cria_alv.txt)
 
 ##### FORM F_SET_FIELDCAT
 
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_set_fieldcast.txt)
+ 
+  * **Funções chamadas:**<br>
+   - T
 
 ##### FORM F_SORT_TABLE
 
@@ -123,6 +129,10 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
  ##### FORM exibir_popup_erros
  
   [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_exibir_popup_erros.txt)
+  
+  * **Funções chamadas:**<br>
+   - CONVERSION_EXIT_ALPHA_INPUT - 950
+   - POPUP_WITH_TABLE_DISPLAY_OK - 968
  
  ##### FORM user_command
  
