@@ -1,21 +1,5 @@
 # 9000075165 - Ajuste programa de carga de doc contabil
 
-### DESCRIÇÃO DOS DADOS
----
-#### TABELAS 
-
-##### FPESQUISA
-* **ID_Processador:** Identificador do processador.<br>
-    - Tipo de dados: Número Decimal.
-* **ID_Notificador:** Identificador do notificador.<br>
-    - Tipo de dados: Número Decimal.
-* **ID_SSI:** Identificador da SSI(chamado).<br>
-    - Tipo de dados: Número Decimal.
-* **Data_Criacao_SSI:** Armazena a data que a SSI foi aberta.<br>
-    - Tipo de dados: Qualquer.
-* **Data_Encerramento_SSI:** Armazena a data que a SSI foi encerrada.<br>
-    - Tipo de dados: Qualquer.
-
 #### CAMPOS
 
 Nome Tecnico  |Tipo	        |Descrição 	          |Exemplo
