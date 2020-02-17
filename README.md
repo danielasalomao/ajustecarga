@@ -101,6 +101,8 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
  
    * **Funções chamadas:**<br>
    - REUSE_ALV_GRID_DISPLAY - 590
+   
+   [Código]( https://github.com/danielasalomao/ajustecarga/blob/master/function%20reuse_alv_grid_display.txt)
 
 ##### FORM F_SET_FIELDCAT
 
