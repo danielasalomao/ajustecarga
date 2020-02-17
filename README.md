@@ -133,6 +133,8 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
   * **Funções chamadas:**<br>
    - CONVERSION_EXIT_ALPHA_INPUT - 950
    - POPUP_WITH_TABLE_DISPLAY_OK - 968
+   
+       [Código](https://github.com/danielasalomao/ajustecarga/blob/master/FUNCTION%20POPUP_WITH_TABLE_DISPLAY_OK.txt)
  
  ##### FORM user_command
  
