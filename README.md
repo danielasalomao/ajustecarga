@@ -148,7 +148,7 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
  
  * **Funções chamadas:**<br>
     - CONVERSION_EXIT_SDATE_INPUT - 825
-     [Código](
+     [Código](https://github.com/danielasalomao/ajustecarga/blob/master/FUNCTION%20CONVERSION_EXIT_SDATE_INPUT.txt)
 
 #### M - FORM F_FORMATAR_DADOS_ARQUIVO
 
