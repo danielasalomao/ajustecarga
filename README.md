@@ -46,7 +46,18 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
 
 ### 1.1 - INCLUDE ZRFI_PARTIDAS_ABERTASTOP_CPY.
 
- [Código](https://github.com/danielasalomao/ajustecarga/blob/master/Include_ZRFI_PARTIDASTOP_CPY.txt)    
+ [Código](https://github.com/danielasalomao/ajustecarga/blob/master/Include_ZRFI_PARTIDASTOP_CPY.txt)  
+ 
+* Report
+* Types
+* Ty_arq - campos planilha excel
+* Ty_alv
+* Tabelas Internas
+* Work Areas
+* Estruturas
+* Variáveis
+* Constantes
+* Objetos
 
 ### 1.2 - INCLUDE ZRFI_PARTIDAS_ABERTASF01_CPY.
 
