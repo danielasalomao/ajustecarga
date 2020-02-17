@@ -1,0 +1,111 @@
+FUNCTION CONVERSION_EXIT_SDATE_INPUT.
+*"----------------------------------------------------------------------
+*"*"Lokale Schnittstelle:
+*"       IMPORTING
+*"              INPUT
+*"       EXPORTING
+*"              OUTPUT
+*"----------------------------------------------------------------------
+
+  DATA: H_SONDERZEICHEN(23) TYPE C
+          VALUE '0123456789.,*+-_/"§$%& ',                        "#EC *
+        H_OFFSET            LIKE SY-FDPOS,
+        H_DATUM_INPUT(50)   TYPE C,
+        H_DATUM_OUTPUT      LIKE SY-DATUM.
+
+  FIELD-SYMBOLS: <MONAT>.
+
+* SPACE-Eingabe wird nicht konvertiert
+
+  IF INPUT = SPACE.
+    OUTPUT = INPUT.
+    EXIT.
+  ENDIF.
+
+* Überprüfen, ob das externe Datum keine Buchstaben enthält
+
+  H_DATUM_INPUT = INPUT.
+
+  IF H_DATUM_INPUT CO H_SONDERZEICHEN.
+  ENDIF.
+
+  IF SY-FDPOS NE 50.
+
+    H_OFFSET = SY-FDPOS.
+    ASSIGN H_DATUM_INPUT+H_OFFSET(3) TO <MONAT>.
+
+* Füllen der internen Tabelle mit festen Monatsbezeichungen in Englich
+
+    IF H_MONAT_BUFFER NE SPACE.
+      PERFORM FILL_H_MONAT_TAB.
+      H_MONAT_BUFFER = SPACE.
+    ENDIF.
+
+* Füllen des Puffers, falls der Puffer noch initial ist
+
+    IF BUFFER_CONTROL NE SPACE.
+      IF SY-LANGU NE H_LANGU_SAVE
+         OR H_COUNTER EQ 0.
+        H_LANGU_SAVE = SY-LANGU.
+        PERFORM FILL_BUFFER.
+      ENDIF.
+    ENDIF.
+
+    IF BUFFER_CONTROL = 'X'.
+
+      LOOP AT T247_TAB WHERE KTX = <MONAT>.
+        REPLACE <MONAT> WITH T247_TAB-MNR INTO <MONAT>.
+        CONDENSE H_DATUM_INPUT NO-GAPS.
+      ENDLOOP.
+
+      IF SY-SUBRC NE 0.
+        MESSAGE S651 WITH <MONAT> SY-LANGU.
+* Monat & ist in der Sprache & nicht angelegt
+      ENDIF.
+
+    ELSE.
+
+      CLEAR H_T247_TAB.
+      REFRESH H_T247_TAB.
+
+      SELECT * FROM T247 WHERE SPRAS = SY-LANGU.
+        H_T247_TAB = T247.
+        APPEND H_T247_TAB.
+      ENDSELECT.
+
+      LOOP AT H_T247_TAB WHERE KTX = <MONAT>.
+        REPLACE <MONAT> WITH H_T247_TAB-MNR INTO <MONAT>.
+        CONDENSE H_DATUM_INPUT NO-GAPS.
+      ENDLOOP.
+
+      IF SY-SUBRC NE 0.
+        MESSAGE S651 WITH <MONAT> SY-LANGU.
+* Monat & ist in der Sprache & nicht angelegt
+      ENDIF.
+
+    ENDIF.
+
+  ENDIF.
+
+  CALL FUNCTION 'CONVERT_DATE_INPUT'
+       EXPORTING
+            INPUT                     = H_DATUM_INPUT
+            PLAUSIBILITY_CHECK        = 'X'
+       IMPORTING
+            OUTPUT                    = H_DATUM_OUTPUT
+       EXCEPTIONS
+*           PLAUSIBILITY_CHECK_FAILED = 02
+            WRONG_FORMAT_IN_INPUT     = 01.
+
+  IF SY-SUBRC <> 0.
+    OUTPUT = SPACE.
+    MESSAGE S885.
+* Bitte geben Sie ein gültiges Datum ein
+
+  ELSE.
+
+    OUTPUT = H_DATUM_OUTPUT.
+
+  ENDIF.
+
+ENDFUNCTION.
