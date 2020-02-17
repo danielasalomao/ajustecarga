@@ -98,14 +98,14 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
 #### FORM_F_CRIA_ALV
 
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_cria_alv.txt)
+ 
+   * **Funções chamadas:**<br>
+   - REUSE_ALV_GRID_DISPLAY - 590
 
 ##### FORM F_SET_FIELDCAT
 
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_set_fieldcast.txt)
  
-  * **Funções chamadas:**<br>
-   - T
-
 ##### FORM F_SORT_TABLE
 
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_sort_table.txt)
