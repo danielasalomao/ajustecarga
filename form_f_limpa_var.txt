@@ -1,0 +1,34 @@
+FORM f_limpa_var.
+
+  REFRESH:
+    it_alv,
+    it_arq,
+    it_fieldcat,
+    it_accountgl,
+    it_curr_amount,
+    it_accountpayable,
+    it_accountreceivable,
+    it_extension2,
+    it_sort.
+
+  CLEAR:
+    wa_doc_header,
+    wa_curr_amount,
+    wa_accountgl,
+    wa_accountpayable,
+    wa_accountreceivable,
+    wa_extension2,
+    wa_sort,
+    st_layout,
+    gv_cont,
+    gv_sessao,
+    vg_snd_jobs,
+    vg_rcv_jobs,
+    vg_act_jobs,
+    vg_free,
+    vg_th_cont,
+    vg_task_id,
+    o_tvarv,
+    gv_iserror.
+
+ENDFORM.

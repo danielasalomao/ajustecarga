@@ -1,0 +1,108 @@
+FORM f_sort_table.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'BLDAT'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'BUKRS'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'BUDAT'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'MONAT'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'BLART'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'WAERS'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'XBLNR'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'BKTXT'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'BSCHL'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'NEWKO'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'WRBTR'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'KURSF'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'NEWNUM'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'ZFBDT'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'KOSTL'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'PRCTR'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'AUFNR'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'ZUONR'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'SGTXT'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'BELNR'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'GJAHR'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+ENDFORM.

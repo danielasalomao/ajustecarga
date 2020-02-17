@@ -1,0 +1,24 @@
+FORM f_set_fieldcat  USING p_fieldname   ##PERF_NO_TYPE
+                           p_desc        ##PERF_NO_TYPE
+                           p_dataelement ##PERF_NO_TYPE.
+
+  DATA: wa_field LIKE LINE OF it_fieldcat.
+
+  CLEAR wa_field.
+  wa_field-fieldname = p_fieldname.
+  wa_field-seltext_m = p_desc.
+  wa_field-ddictxt   = 'L'.
+  wa_field-tabname   = 'IT_ALV'.
+
+  IF  p_fieldname NE 'MESSAGE'
+  AND p_fieldname NE 'SGTXT'.
+    wa_field-just = 'L'.
+  ENDIF.
+
+  wa_field-rollname     = p_dataelement.
+  wa_field-decimals_out = 2.
+
+  APPEND wa_field TO it_fieldcat.
+
+
+ENDFORM.

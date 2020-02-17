@@ -1,0 +1,72 @@
+FORM f_cria_alv.
+
+  IF it_arq IS INITIAL.
+    MESSAGE text-003 TYPE 'S' DISPLAY LIKE 'E'.
+*** Arquivo não encontrado.
+    LEAVE LIST-PROCESSING.
+  ENDIF.
+
+  DELETE it_alv WHERE bukrs IS INITIAL.
+
+  IF it_alv IS INITIAL.
+    MESSAGE text-005 TYPE 'S' DISPLAY LIKE 'E'.
+***Partidas lançadas com sucesso
+    LEAVE LIST-PROCESSING.
+  ENDIF.
+
+  " Preenche o Fieldcat.
+  PERFORM f_set_fieldcat USING: 'STATS'      text-f01   'STATS',    ""Status
+                                'BELNR'      text-f32   'BELNR',    ""N Documento
+                                'GJAHR'      text-f33   'GJAHR',    ""Exercicio
+                                'BLDAT'      text-f02   'BLDAT',    ""Data no documento
+                                'BUKRS'      text-f03   'BUKRS',    ""Empresa
+*                                'WERKS'      text-f29   'WERKS',   ""Centro - nao aparece
+                                'BUDAT'      text-f04   'BUDAT',    ""Data de lançamento no documento
+                                'MONAT'      text-f05   'MONAT',    ""Mês do exercicio
+                                'BLART'      text-f06   'BLART',    ""Tipo de documento
+                                'WAERS'      text-f07   'WAERS',
+                                'XBLNR'      text-f08   'XBLNR',
+                                'BKTXT'      text-f09   'BKTXT',
+*                                'BSCHL'      text-f10   'BSCHL',   ""Chave de Lançamento / aparece 40 ou 50/ inviavel
+*                                'NEWKO'      text-f11   'NEWKO',   ""Conta/ se tiver mais de uma conta, aparece a ultima/ inviavel
+                                'WRBTR'      text-f12   'WRBTR',
+                                'KURSF'      text-f13   'KURSF',
+                                'NEWNUM'     text-f14   'NEWNUM',
+                                'ZFBDT'      text-f15   'ZFBDT',
+*                                'ZTERM'      text-f30   'ZTERM',
+*                                'MATNR'      text-f31   'MATNR',
+                                'KOSTL'      text-f16   'KOSTL',
+                                'PRCTR'      text-f17   'PRCTR',
+                                'AUFNR'      text-f18   'AUFNR',
+                                'ZUONR'      text-f19   'ZUONR',
+                                'SGTXT'      text-f20   'SGTXT',
+                                'MESSAGE_RESUMO'    text-f21   'MESSAGE_RESUMO'.  ""Mensagem de Log
+
+*  PERFORM f_sort_table.
+
+  st_layout-zebra             = abap_true. " Deixa layout em zebra
+  st_layout-colwidth_optimize = abap_true. " Otimizar tamanho de coluna ao valor do campo
+
+
+  " Chamada de função do ALV.
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+    EXPORTING
+      i_callback_program      = sy-repid
+      it_fieldcat             = it_fieldcat
+      i_save                  = abap_true
+      is_layout               = st_layout
+      it_sort                 = it_sort
+      i_callback_user_command = 'USER_COMMAND'
+    TABLES
+      t_outtab                = it_alv
+    EXCEPTIONS
+      program_error           = 1
+      OTHERS                  = 2.
+
+  IF sy-subrc IS NOT INITIAL.
+    MESSAGE ID sy-msgid TYPE 'S' NUMBER sy-msgno
+          WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4 DISPLAY LIKE 'E'.
+    LEAVE LIST-PROCESSING.
+  ENDIF.
+
+ENDFORM.
