@@ -103,14 +103,21 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
 
 ##### FORM F_CONVERSION_EXIT_ALPHA_INPUT
 
- [Código](
+ [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_conversion_exit_alpha_input.txt)
 
 ##### FORM F_CONVERSION_EXIT_SDATE_INPUT
 
- [Código](
+ [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_conversion_exit_sdate_input.txt)
 
 ##### FORM F_FORMATAR_DADOS_ARQUIVO
 
- [Código](
-    
+ [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_formatar_dados_arquivo.txt)
+ 
+ ##### FORM exibir_popup_erros
+ 
+  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_exibir_popup_erros.txt)
+ 
+ ##### FORM user_command
+ 
+  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_user_command.txt)
     
