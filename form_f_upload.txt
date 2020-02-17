@@ -1,0 +1,66 @@
+FORM f_upload.
+
+*  DATA: l_string  TYPE string,
+*        l_caminho TYPE string.
+*
+*  CLEAR: l_string, l_caminho.
+*
+*  l_caminho = p_path.
+*
+*  OPEN DATASET l_caminho FOR INPUT IN
+*                         TEXT MODE ENCODING
+*                         DEFAULT WITH SMART LINEFEED.
+*
+*  WHILE sy-subrc IS INITIAL.
+*    READ DATASET l_caminho INTO l_string.
+*    CHECK sy-subrc IS INITIAL.
+*    CHECK sy-index GT 1. " Desprezar header
+*    PERFORM f_formatar_dados_arquivo USING l_string.
+*    CLEAR: l_string.
+*  ENDWHILE.
+*
+*  CLOSE DATASET l_caminho.
+*
+*  IF it_arq IS INITIAL.
+*    MESSAGE text-002 TYPE 'S' DISPLAY LIKE 'E'.
+*    LEAVE LIST-PROCESSING.
+*  ENDIF.
+
+*BCI:RRUBINO: Melhoria carga ZRFI_PARTIDAS_ABERTAS - 17.01.2019 - Inicio
+
+  DATA: it_datatab TYPE table_of_strings,
+        wa_datatab LIKE LINE OF it_datatab,
+        ld_lines   TYPE i,
+        ld_file    TYPE string,
+        l_string   TYPE string.
+
+  ld_file = p_path.
+
+  CALL METHOD cl_gui_frontend_services=>gui_upload
+    EXPORTING
+      filename = ld_file
+      filetype = 'ASC'
+    CHANGING
+      data_tab = it_datatab
+    EXCEPTIONS
+      OTHERS   = 1.
+
+  IF sy-subrc = 0.
+    IF it_datatab IS INITIAL.
+      MESSAGE text-002 TYPE 'S' DISPLAY LIKE 'E'.
+***Arquivo não contem registros / Tipo S??? Display like???
+      LEAVE LIST-PROCESSING.
+    ELSE.
+      LOOP AT it_datatab INTO wa_datatab.
+        CHECK sy-tabix GT 1. " Desprezar header
+        l_string = wa_datatab.
+        PERFORM f_formatar_dados_arquivo USING l_string.
+      ENDLOOP.
+    ENDIF.
+  ELSE.
+    MESSAGE text-007 TYPE 'S' DISPLAY LIKE 'E'.
+***Erro ao abrir arquivo  / Tipo S??? Display like???
+    LEAVE LIST-PROCESSING.
+  ENDIF.
+*BCI:RRUBINO: Melhoria carga ZRFI_PARTIDAS_ABERTAS - 17.01.2019 - Fim
+ENDFORM.

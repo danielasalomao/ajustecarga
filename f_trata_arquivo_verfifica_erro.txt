@@ -1,0 +1,28 @@
+FORM f_trata_arquivo_verifica_erro.
+  IF p_teste IS INITIAL.
+    p_teste = 'X'.
+    PERFORM f_trata_arquivo.
+    WAIT UNTIL vg_rcv_jobs EQ vg_snd_jobs.
+    IF gv_iserror IS INITIAL.
+      p_teste = ''.
+      PERFORM f_trata_arquivo.
+    ENDIF.
+    p_teste = ''.
+  ELSE.
+    PERFORM f_trata_arquivo.
+  ENDIF.
+
+  WAIT UNTIL vg_rcv_jobs EQ vg_snd_jobs.
+
+  IF gv_iserror IS NOT INITIAL.
+    LOOP AT it_alv ASSIGNING <fs_alv>.
+      IF <fs_alv> IS ASSIGNED.
+        IF <fs_alv>-stats = icon_green_light.
+          <fs_alv>-stats = icon_yellow_light.
+          <fs_alv>-message_resumo = text-008.
+*** Documento não lançado devido a erro em outra entrada.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+  ENDIF.
+ENDFORM.

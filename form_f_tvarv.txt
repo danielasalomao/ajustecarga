@@ -1,0 +1,17 @@
+FORM f_tvarv .
+
+  " Se o objeto ainda não foi instanciado, cria-lo.
+  IF o_tvarv IS NOT BOUND.
+    CREATE OBJECT o_tvarv
+      EXPORTING
+        prefix    = c_prefixo
+        separator = c_separador.
+  ENDIF.
+
+  CALL METHOD o_tvarv->get_parameter
+    EXPORTING
+      suffix = c_sessao
+    IMPORTING
+      value  = gv_sessao.
+
+ENDFORM.

@@ -1,0 +1,45 @@
+FORM f_fim_bapi USING  taskname TYPE any ##NEEDED.
+
+  DATA: tl_al_aux TYPE TABLE OF zbfi_s_arq_alv_carga_pt_abert.
+  FIELD-SYMBOLS <fs_alv> TYPE ty_alv.
+  DATA it_aux_string TYPE TABLE OF string.
+  DATA lv_message TYPE string.
+  DATA lv_lines TYPE i.
+
+  RECEIVE RESULTS FROM FUNCTION 'ZFFI_CARGA_PARTIDA_ABERTA'
+    TABLES
+     t_alv           = tl_al_aux
+
+    EXCEPTIONS
+       communication_failure = 1
+       system_failure        = 2
+       resource_failure      = 3.
+
+  IF sy-subrc IS INITIAL.
+    APPEND LINES OF tl_al_aux TO it_alv .
+    LOOP AT it_alv ASSIGNING <fs_alv>.
+      SPLIT <fs_alv>-message AT ';' INTO TABLE it_aux_string.
+      READ TABLE it_aux_string INDEX 1 INTO lv_message.
+      IF sy-subrc IS INITIAL.
+        IF lv_message = 'E'.
+          gv_iserror = 'X'.
+          READ TABLE it_aux_string INDEX 2 INTO lv_message.
+          CONDENSE lv_message.
+          <fs_alv>-message_resumo = lv_message.
+        ELSEIF lv_message = 'W'.
+          READ TABLE it_aux_string INDEX 2 INTO lv_message.
+          CONDENSE lv_message.
+          <fs_alv>-message_resumo = lv_message.
+        ELSE.
+          READ TABLE it_aux_string INDEX 2 INTO lv_message.
+          CONDENSE lv_message.
+          <fs_alv>-message_resumo = lv_message.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+
+  ENDIF.
+
+  vg_rcv_jobs = vg_rcv_jobs + 1.
+
+ENDFORM.
