@@ -103,6 +103,10 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
 ##### FORM F_TRATA_ARQUIVO_VERIFICA_ERRO
 
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_trata_arquivo_verfifica_erro.txt)
+ 
+ * Trata arquivo
+ * Verifica se algum documento contem erro.
+ * Commit apenas se todos ok.
 
 #### FORM_F_CRIA_ALV
 
