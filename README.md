@@ -87,16 +87,30 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
 
 ##### FORM_F_CRIA_ALV
 
+ [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_cria_alv.txt)
+
 ##### FORM F_SET_FIELDCAT
+
+ [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_set_fieldcast.txt)
 
 ##### FORM F_SORT_TABLE
 
+ [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_sort_table.txt)
+
 ##### FORM F_LIMPA_VAR
+
+ [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_limpa_var.txt)
 
 ##### FORM F_CONVERSION_EXIT_ALPHA_INPUT
 
+ [Código](
+
 ##### FORM F_CONVERSION_EXIT_SDATE_INPUT
 
+ [Código](
+
 ##### FORM F_FORMATAR_DADOS_ARQUIVO
+
+ [Código](
     
     
