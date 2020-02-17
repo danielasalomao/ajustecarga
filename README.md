@@ -40,7 +40,7 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
 
 
 
-## 1.0 - ZRFI_PARTIDAS_ABERTAS_CPY
+## 1 - ZRFI_PARTIDAS_ABERTAS_CPY
 
  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/ZRFI_PARTIDAS_ABERTAS_cpy.txt)
 
