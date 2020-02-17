@@ -69,13 +69,21 @@ zuonr	    |bseg-zuonr|	atribuicao|	221331
 
 ##### FORM F_UPLOAD
 
+ [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_upload.txt)
+
 ##### FORM F_TVARV
+
+ [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_tvarv.txt)
 
 ##### FORM F_TRATA_ARQUIVO
 
 ##### FORM F_FIM_BAPI
 
+ [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_fim_bapi.txt)
+
 ##### FORM F_TRATA_ARQUIVO_VERIFICA_ERRO
+
+ [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_trata_arquivo_verfifica_erro.txt)
 
 ##### FORM_F_CRIA_ALV
 
