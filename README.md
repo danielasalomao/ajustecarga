@@ -115,16 +115,102 @@
 
 ##### M - FORM F_FORMATAR_DADOS_ARQUIVO
 
- [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_formatar_dados_arquivo.txt)
+```abap 
+FORM f_formatar_dados_arquivo USING ip_string TYPE string.
+
+  DATA: lw_arq      LIKE LINE OF it_arq,
+        l_wrbtr(16) TYPE c,
+        l_budat(10) TYPE c,
+        l_bldat(10) TYPE c,
+        l_zfbdt(10) TYPE c,
+        lv_belnr(10) TYPE c,
+        l_gjahr(4) TYPE c.
+
+
+  CLEAR: lw_arq, l_wrbtr, l_budat, l_bldat, l_zfbdt, lv_belnr, l_gjahr.
+
+  " Executar Loop apenas se a tabela de conteúdo estiver preenchida.
+  SPLIT ip_string AT ';' INTO: l_budat       " Data de Lançamento
+                               lw_arq-monat  " Período
+                               lw_arq-bukrs  " Empresa
+*
+                               lw_arq-werks  " Centro
+*
+                               lw_arq-blart  " Tipo de Documento
+                               l_bldat       " Data do documento
+                               lw_arq-waers  " Moeda
+                               lw_arq-kursf  " Taxa de conversão
+                               lw_arq-bktxt  " Texto de cabeçalho
+                               lw_arq-xblnr  " Referência
+                               lw_arq-bschl  " Chave de Lançamento
+                               lw_arq-newko  " Conta / Conta Contábil
+                               lw_arq-newnum " Indicação de Razão Especial
+                               l_wrbtr       " Montante na moeda do documento
+                               l_zfbdt       " Data base
+*
+                               lw_arq-zterm  " Cond.Pafgamento
+                               lw_arq-matnr  " Material
+*
+                               lw_arq-kostl  " Centro de Custo
+                               lw_arq-prctr  " Centro de Lucro
+                               lw_arq-aufnr  " Ordem Interna
+                               lw_arq-zuonr  " Atribuição
+                               lw_arq-sgtxt  " Texto do Item.
+                               lw_arq-bupla  " Local de negócios
+*
+                               lw_arq-ebeln  " Doc.Material
+*
+                               lw_arq-xref3  " Chave de referência para item de doc.
+                               lw_arq-anfbn  " Nº Solicitação
+                               lw_arq-anfbu  " Empresa da Solicitação de L/C
+                               lw_arq-anfbj  " Ano da Solicitação de L/C
+                               lw_arq-hbkid  " Banco empresa
+                               lw_arq-zlsch " Forma de pagamento.
+                               lv_belnr " Nº documento.
+                               l_gjahr. " Exercicio.
+
+  " trata centro de lucro do arquivo
+  PERFORM f_conversion_exit_alpha_input CHANGING lw_arq-prctr.
+
+  " Data de Lançamento
+  PERFORM f_conversion_exit_sdate_input USING    l_budat
+                                        CHANGING lw_arq-budat.
+  " Data do documento
+  PERFORM f_conversion_exit_sdate_input USING    l_bldat
+                                        CHANGING lw_arq-bldat.
+  " Data base
+  PERFORM f_conversion_exit_sdate_input USING    l_zfbdt
+                                        CHANGING lw_arq-zfbdt.
+
+
+*  PERFORM f_conversion_exit_sdate_input USING    l_gjahr
+*                                       CHANGING lw_arq-budat.
+
+
+
+
+  " Tratando variável de valor
+  TRANSLATE l_wrbtr USING ',.'.
+
+  IF lw_arq-bschl EQ c_ch_lanc_cred
+  OR lw_arq-bschl EQ c_ch_fat_fornec
+  OR lw_arq-bschl EQ c_ch_razao_cli
+  OR lw_arq-bschl EQ c_ch_cred_cli.
+    lw_arq-wrbtr = l_wrbtr * -1.
+  ELSE.
+    lw_arq-wrbtr = l_wrbtr.
+  ENDIF.
+
+  APPEND lw_arq TO it_arq.
+
+ENDFORM.
+
+```
  
 ##### N - FORM exibir_popup_erros
  
-  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_exibir_popup_erros.txt)
 ```abap
-  
-  
-  
-  
+
   FORM exibir_popup_erros USING lv_rownumber.
   DATA: idd07v TYPE TABLE OF  dd07v WITH HEADER LINE.
   DATA lv_choice TYPE string.
@@ -184,15 +270,14 @@
 
 ENDFORM.
   
-  
 ```
   
   * **Funções chamadas:**<br>
      - CONVERSION_EXIT_ALPHA_INPUT - 950
      - POPUP_WITH_TABLE_DISPLAY_OK - 968   
-       [Código](https://github.com/danielasalomao/ajustecarga/blob/master/FUNCTION%20POPUP_WITH_TABLE_DISPLAY_OK.txt)
-
+    
 ```abap
+
 FUNCTION POPUP_WITH_TABLE_DISPLAY_OK.
 *"----------------------------------------------------------------------
 *"*"Local interface:
@@ -281,13 +366,13 @@ ENDMODULE.
 MODULE SUPPRESS_DIALOG OUTPUT.
   SUPPRESS DIALOG.
 ENDMODULE.                             " SUPPRESS_DIALOG  OUTPUT
+
 ```
 
-
  ##### O - FORM user_command
- 
- 
+  
 ```abap
+
 FORM user_command USING ucomm    LIKE sy-ucomm
                         selfield TYPE slis_selfield.
 
@@ -302,6 +387,7 @@ FORM user_command USING ucomm    LIKE sy-ucomm
   CLEAR ucomm.
 
 ENDFORM.                    "user_command
+
 ```
     
 ---    
