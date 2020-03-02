@@ -129,8 +129,9 @@
  ##### O - FORM user_command
  
   [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_user_command.txt)
-    
-´´´abap
+
+```abap
+
 FORM user_command USING ucomm    LIKE sy-ucomm
                         selfield TYPE slis_selfield.
 
@@ -145,7 +146,7 @@ FORM user_command USING ucomm    LIKE sy-ucomm
   CLEAR ucomm.
 
 ENDFORM.                    "user_command
-´´´
+```
     
 ---    
 
