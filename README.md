@@ -120,6 +120,72 @@
 ##### N - FORM exibir_popup_erros
  
   [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_exibir_popup_erros.txt)
+```abap
+  
+  
+  
+  
+  FORM exibir_popup_erros USING lv_rownumber.
+  DATA: idd07v TYPE TABLE OF  dd07v WITH HEADER LINE.
+  DATA lv_choice TYPE string.
+  DATA it_textoerros TYPE TABLE OF dd07v-ddtext.
+  FIELD-SYMBOLS <fs_textoerros> TYPE dd07v-ddtext.
+  DATA lv_nlinhas TYPE i.
+  DATA lv_cont TYPE i.
+  DATA lv_saknr TYPE skat-saknr.
+  DATA lv_txt20 TYPE skat-txt20.
+
+  READ TABLE it_alv INTO wa_alv INDEX lv_rownumber.
+  IF sy-subrc IS INITIAL.
+
+    SPLIT wa_alv-message AT ';' INTO TABLE it_textoerros.
+
+    DELETE it_textoerros INDEX 1.
+    LOOP AT it_textoerros ASSIGNING <fs_textoerros>.
+
+      AT LAST.
+        IF <fs_textoerros>(9) = 'Descrição'.
+          IF p_teste IS INITIAL.
+
+            CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+              EXPORTING
+                input  = wa_alv-newko
+              IMPORTING
+                output = lv_saknr.
+
+            SELECT SINGLE txt20 FROM skat
+             INTO lv_txt20
+             WHERE saknr = lv_saknr.
+            <fs_textoerros> = |Descrição: { lv_txt20 }|.
+          ENDIF.
+
+        ENDIF.
+      ENDAT.
+      <fs_textoerros> = |{ sy-tabix }. { <fs_textoerros> }|.
+    ENDLOOP.
+
+    lv_nlinhas = lines( it_textoerros ).
+    CALL FUNCTION 'POPUP_WITH_TABLE_DISPLAY_OK'
+      EXPORTING
+        endpos_col   = 70
+        endpos_row   = lv_nlinhas
+        startpos_col = 1
+        startpos_row = 1
+        titletext    = 'Exibição dos erros para linha selecionada'
+      TABLES
+        valuetab     = it_textoerros
+      EXCEPTIONS
+        break_off    = 1
+        OTHERS       = 2.
+    IF sy-subrc <> 0.
+      MESSAGE 'Erro ao exibir popup' TYPE 'E'.
+    ENDIF.
+  ENDIF.
+
+ENDFORM.
+  
+  
+```
   
   * **Funções chamadas:**<br>
      - CONVERSION_EXIT_ALPHA_INPUT - 950
