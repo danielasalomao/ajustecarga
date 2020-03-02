@@ -126,7 +126,7 @@
      - POPUP_WITH_TABLE_DISPLAY_OK - 968   
        [Código](https://github.com/danielasalomao/ajustecarga/blob/master/FUNCTION%20POPUP_WITH_TABLE_DISPLAY_OK.txt)
 
-´´´abap
+```abap
 FUNCTION POPUP_WITH_TABLE_DISPLAY_OK.
 *"----------------------------------------------------------------------
 *"*"Local interface:
@@ -215,13 +215,13 @@ ENDMODULE.
 MODULE SUPPRESS_DIALOG OUTPUT.
   SUPPRESS DIALOG.
 ENDMODULE.                             " SUPPRESS_DIALOG  OUTPUT
-´´´
+```
 
 
  ##### O - FORM user_command
  
  
-´´´abap
+```abap
 FORM user_command USING ucomm    LIKE sy-ucomm
                         selfield TYPE slis_selfield.
 
@@ -236,7 +236,7 @@ FORM user_command USING ucomm    LIKE sy-ucomm
   CLEAR ucomm.
 
 ENDFORM.                    "user_command
-´´´
+```
     
 ---    
 
