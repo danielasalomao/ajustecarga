@@ -822,15 +822,14 @@ ENDFORM.
 ENDFUNCTION.
 ```
     
-    - ZFFI_CARGA_PARTIDA_ABERTA - 191, 402  
+   - ZFFI_CARGA_PARTIDA_ABERTA - 191, 402  
     
     [Código](https://github.com/danielasalomao/ajustecarga/blob/master/FUNCTION%20zffi_carga_partida_aberta.txt)
 
 
     
-    - CONVERSION_EXIT_ALPHA_INPUT - 259, 327   
-    
-    
+   - CONVERSION_EXIT_ALPHA_INPUT - 259, 327   
+        
  ```abap
 FUNCTION CONVERSION_EXIT_ALPHA_INPUT.
 *"----------------------------------------------------------------------
@@ -1222,22 +1221,201 @@ endfunction.
 ```
 
 ##### H - FORM F_SET_FIELDCAT
+ 
+ ```abap
+ FORM f_set_fieldcat  USING p_fieldname   ##PERF_NO_TYPE
+                           p_desc        ##PERF_NO_TYPE
+                           p_dataelement ##PERF_NO_TYPE.
 
- [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_set_fieldcast.txt)
+  DATA: wa_field LIKE LINE OF it_fieldcat.
+
+  CLEAR wa_field.
+  wa_field-fieldname = p_fieldname.
+  wa_field-seltext_m = p_desc.
+  wa_field-ddictxt   = 'L'.
+  wa_field-tabname   = 'IT_ALV'.
+
+  IF  p_fieldname NE 'MESSAGE'
+  AND p_fieldname NE 'SGTXT'.
+    wa_field-just = 'L'.
+  ENDIF.
+
+  wa_field-rollname     = p_dataelement.
+  wa_field-decimals_out = 2.
+
+  APPEND wa_field TO it_fieldcat.
+
+
+ENDFORM.
+```
  
 ##### I - FORM F_SORT_TABLE
+ 
+ ```abap
+ FORM f_sort_table.
 
- [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_sort_table.txt)
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'BLDAT'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'BUKRS'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'BUDAT'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'MONAT'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'BLART'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'WAERS'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'XBLNR'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'BKTXT'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'BSCHL'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'NEWKO'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'WRBTR'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'KURSF'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'NEWNUM'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'ZFBDT'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'KOSTL'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'PRCTR'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'AUFNR'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'ZUONR'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'SGTXT'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'BELNR'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+  CLEAR wa_sort.
+  wa_sort-fieldname = 'GJAHR'.
+  wa_sort-spos = '1'.
+  APPEND wa_sort TO it_sort.
+
+ENDFORM.
+ ```
 
 ##### J - FORM F_LIMPA_VAR
-
- [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_limpa_var.txt)
  
  * Limpa variáveis e tabelas internas.
+ 
+ ```abap
+ FORM f_limpa_var.
+
+  REFRESH:
+    it_alv,
+    it_arq,
+    it_fieldcat,
+    it_accountgl,
+    it_curr_amount,
+    it_accountpayable,
+    it_accountreceivable,
+    it_extension2,
+    it_sort.
+
+  CLEAR:
+    wa_doc_header,
+    wa_curr_amount,
+    wa_accountgl,
+    wa_accountpayable,
+    wa_accountreceivable,
+    wa_extension2,
+    wa_sort,
+    st_layout,
+    gv_cont,
+    gv_sessao,
+    vg_snd_jobs,
+    vg_rcv_jobs,
+    vg_act_jobs,
+    vg_free,
+    vg_th_cont,
+    vg_task_id,
+    o_tvarv,
+    gv_iserror.
+
+ENDFORM.
+ ```
 
 ##### K - FORM F_CONVERSION_EXIT_ALPHA_INPUT
+ 
+ ```abap
+ FORM f_conversion_exit_alpha_input CHANGING cp_valor TYPE any.
 
- [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_conversion_exit_alpha_input.txt)
+  CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+    EXPORTING
+      input  = cp_valor
+    IMPORTING
+      output = cp_valor.
+
+ENDFORM.
+ ```
  
  * **Funções chamadas:**<br>
     - CONVERSION_EXIT_ALPHA_INPUT - 808
@@ -1245,12 +1423,135 @@ endfunction.
 
 ##### L - FORM F_CONVERSION_EXIT_SDATE_INPUT
 
- [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_conversion_exit_sdate_input.txt)
+ ```abap
+ FORM f_conversion_exit_sdate_input USING    ip_entrada TYPE any
+                                   CHANGING cp_saida   TYPE any.
+
+  CALL FUNCTION 'CONVERSION_EXIT_SDATE_INPUT'
+    EXPORTING
+      input  = ip_entrada
+    IMPORTING
+      output = cp_saida.
+
+ENDFORM.
+```
  
  * **Funções chamadas:**<br>
     - CONVERSION_EXIT_SDATE_INPUT - 825
     
-      [Código](https://github.com/danielasalomao/ajustecarga/blob/master/FUNCTION%20CONVERSION_EXIT_SDATE_INPUT.txt)
+ ```abap
+      FUNCTION CONVERSION_EXIT_SDATE_INPUT.
+*"----------------------------------------------------------------------
+*"*"Lokale Schnittstelle:
+*"       IMPORTING
+*"              INPUT
+*"       EXPORTING
+*"              OUTPUT
+*"----------------------------------------------------------------------
+
+  DATA: H_SONDERZEICHEN(23) TYPE C
+          VALUE '0123456789.,*+-_/"§$%& ',                        "#EC *
+        H_OFFSET            LIKE SY-FDPOS,
+        H_DATUM_INPUT(50)   TYPE C,
+        H_DATUM_OUTPUT      LIKE SY-DATUM.
+
+  FIELD-SYMBOLS: <MONAT>.
+
+* SPACE-Eingabe wird nicht konvertiert
+
+  IF INPUT = SPACE.
+    OUTPUT = INPUT.
+    EXIT.
+  ENDIF.
+
+* Überprüfen, ob das externe Datum keine Buchstaben enthält
+
+  H_DATUM_INPUT = INPUT.
+
+  IF H_DATUM_INPUT CO H_SONDERZEICHEN.
+  ENDIF.
+
+  IF SY-FDPOS NE 50.
+
+    H_OFFSET = SY-FDPOS.
+    ASSIGN H_DATUM_INPUT+H_OFFSET(3) TO <MONAT>.
+
+* Füllen der internen Tabelle mit festen Monatsbezeichungen in Englich
+
+    IF H_MONAT_BUFFER NE SPACE.
+      PERFORM FILL_H_MONAT_TAB.
+      H_MONAT_BUFFER = SPACE.
+    ENDIF.
+
+* Füllen des Puffers, falls der Puffer noch initial ist
+
+    IF BUFFER_CONTROL NE SPACE.
+      IF SY-LANGU NE H_LANGU_SAVE
+         OR H_COUNTER EQ 0.
+        H_LANGU_SAVE = SY-LANGU.
+        PERFORM FILL_BUFFER.
+      ENDIF.
+    ENDIF.
+
+    IF BUFFER_CONTROL = 'X'.
+
+      LOOP AT T247_TAB WHERE KTX = <MONAT>.
+        REPLACE <MONAT> WITH T247_TAB-MNR INTO <MONAT>.
+        CONDENSE H_DATUM_INPUT NO-GAPS.
+      ENDLOOP.
+
+      IF SY-SUBRC NE 0.
+        MESSAGE S651 WITH <MONAT> SY-LANGU.
+* Monat & ist in der Sprache & nicht angelegt
+      ENDIF.
+
+    ELSE.
+
+      CLEAR H_T247_TAB.
+      REFRESH H_T247_TAB.
+
+      SELECT * FROM T247 WHERE SPRAS = SY-LANGU.
+        H_T247_TAB = T247.
+        APPEND H_T247_TAB.
+      ENDSELECT.
+
+      LOOP AT H_T247_TAB WHERE KTX = <MONAT>.
+        REPLACE <MONAT> WITH H_T247_TAB-MNR INTO <MONAT>.
+        CONDENSE H_DATUM_INPUT NO-GAPS.
+      ENDLOOP.
+
+      IF SY-SUBRC NE 0.
+        MESSAGE S651 WITH <MONAT> SY-LANGU.
+* Monat & ist in der Sprache & nicht angelegt
+      ENDIF.
+
+    ENDIF.
+
+  ENDIF.
+
+  CALL FUNCTION 'CONVERT_DATE_INPUT'
+       EXPORTING
+            INPUT                     = H_DATUM_INPUT
+            PLAUSIBILITY_CHECK        = 'X'
+       IMPORTING
+            OUTPUT                    = H_DATUM_OUTPUT
+       EXCEPTIONS
+*           PLAUSIBILITY_CHECK_FAILED = 02
+            WRONG_FORMAT_IN_INPUT     = 01.
+
+  IF SY-SUBRC <> 0.
+    OUTPUT = SPACE.
+    MESSAGE S885.
+* Bitte geben Sie ein gültiges Datum ein
+
+  ELSE.
+
+    OUTPUT = H_DATUM_OUTPUT.
+
+  ENDIF.
+
+ENDFUNCTION.
+```
 
 ##### M - FORM F_FORMATAR_DADOS_ARQUIVO
 
