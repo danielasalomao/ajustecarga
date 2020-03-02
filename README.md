@@ -793,7 +793,6 @@ ENDFORM.
  * **Funções chamadas:**<br>
     - TH_ARFC_LOCAL_RESOURCES - 183, 394
     
-    [Código](https://github.com/danielasalomao/ajustecarga/blob/master/FUNCTION%20TH_ARFC_LOCAL_RESOURCES.txt)
  ```abap
  FUNCTION TH_ARFC_LOCAL_RESOURCES.
 *"----------------------------------------------------------------------
@@ -850,28 +849,377 @@ ENDFUNCTION.
 
 ##### E - FORM F_FIM_BAPI
 
- [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_fim_bapi.txt)
- 
+ ```abap
+ FORM f_fim_bapi USING  taskname TYPE any ##NEEDED.
+
+  DATA: tl_al_aux TYPE TABLE OF zbfi_s_arq_alv_carga_pt_abert.
+  FIELD-SYMBOLS <fs_alv> TYPE ty_alv.
+  DATA it_aux_string TYPE TABLE OF string.
+  DATA lv_message TYPE string.
+  DATA lv_lines TYPE i.
+
+  RECEIVE RESULTS FROM FUNCTION 'ZFFI_CARGA_PARTIDA_ABERTA'
+    TABLES
+     t_alv           = tl_al_aux
+
+    EXCEPTIONS
+       communication_failure = 1
+       system_failure        = 2
+       resource_failure      = 3.
+
+  IF sy-subrc IS INITIAL.
+    APPEND LINES OF tl_al_aux TO it_alv .
+    LOOP AT it_alv ASSIGNING <fs_alv>.
+      SPLIT <fs_alv>-message AT ';' INTO TABLE it_aux_string.
+      READ TABLE it_aux_string INDEX 1 INTO lv_message.
+      IF sy-subrc IS INITIAL.
+        IF lv_message = 'E'.
+          gv_iserror = 'X'.
+          READ TABLE it_aux_string INDEX 2 INTO lv_message.
+          CONDENSE lv_message.
+          <fs_alv>-message_resumo = lv_message.
+        ELSEIF lv_message = 'W'.
+          READ TABLE it_aux_string INDEX 2 INTO lv_message.
+          CONDENSE lv_message.
+          <fs_alv>-message_resumo = lv_message.
+        ELSE.
+          READ TABLE it_aux_string INDEX 2 INTO lv_message.
+          CONDENSE lv_message.
+          <fs_alv>-message_resumo = lv_message.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+
+  ENDIF.
+
+  vg_rcv_jobs = vg_rcv_jobs + 1.
+
+ENDFORM.
+```
   * **Funções:**<br>
       - Recebe resultados da ZFFI_CARGA_PARTIDA_ABERTA - 464
 
 ##### F - FORM F_TRATA_ARQUIVO_VERIFICA_ERRO
-
- [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_trata_arquivo_verfifica_erro.txt)
  
  * Trata arquivo
  * Verifica se algum documento contem erro.
  * Commit apenas se todos ok.
 
-##### G - FORM_F_CRIA_ALV
+```abap
+FORM f_trata_arquivo_verifica_erro.
+  IF p_teste IS INITIAL.
+    p_teste = 'X'.
+    PERFORM f_trata_arquivo.
+    WAIT UNTIL vg_rcv_jobs EQ vg_snd_jobs.
+    IF gv_iserror IS INITIAL.
+      p_teste = ''.
+      PERFORM f_trata_arquivo.
+    ENDIF.
+    p_teste = ''.
+  ELSE.
+    PERFORM f_trata_arquivo.
+  ENDIF.
 
- [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_cria_alv.txt)
+  WAIT UNTIL vg_rcv_jobs EQ vg_snd_jobs.
+
+  IF gv_iserror IS NOT INITIAL.
+    LOOP AT it_alv ASSIGNING <fs_alv>.
+      IF <fs_alv> IS ASSIGNED.
+        IF <fs_alv>-stats = icon_green_light.
+          <fs_alv>-stats = icon_yellow_light.
+          <fs_alv>-message_resumo = text-008.
+*** Documento não lançado devido a erro em outra entrada.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+  ENDIF.
+ENDFORM.
+```
+
+##### G - FORM_F_CRIA_ALV
+ 
+ ```abap
+ FORM f_cria_alv.
+
+  IF it_arq IS INITIAL.
+    MESSAGE text-003 TYPE 'S' DISPLAY LIKE 'E'.
+*** Arquivo não encontrado.
+    LEAVE LIST-PROCESSING.
+  ENDIF.
+
+  DELETE it_alv WHERE bukrs IS INITIAL.
+
+  IF it_alv IS INITIAL.
+    MESSAGE text-005 TYPE 'S' DISPLAY LIKE 'E'.
+***Partidas lançadas com sucesso
+    LEAVE LIST-PROCESSING.
+  ENDIF.
+
+  " Preenche o Fieldcat.
+  PERFORM f_set_fieldcat USING: 'STATS'      text-f01   'STATS',    ""Status
+                                'BELNR'      text-f32   'BELNR',    ""N Documento
+                                'GJAHR'      text-f33   'GJAHR',    ""Exercicio
+                                'BLDAT'      text-f02   'BLDAT',    ""Data no documento
+                                'BUKRS'      text-f03   'BUKRS',    ""Empresa
+*                                'WERKS'      text-f29   'WERKS',   ""Centro - nao aparece
+                                'BUDAT'      text-f04   'BUDAT',    ""Data de lançamento no documento
+                                'MONAT'      text-f05   'MONAT',    ""Mês do exercicio
+                                'BLART'      text-f06   'BLART',    ""Tipo de documento
+                                'WAERS'      text-f07   'WAERS',
+                                'XBLNR'      text-f08   'XBLNR',
+                                'BKTXT'      text-f09   'BKTXT',
+*                                'BSCHL'      text-f10   'BSCHL',   ""Chave de Lançamento / aparece 40 ou 50/ inviavel
+*                                'NEWKO'      text-f11   'NEWKO',   ""Conta/ se tiver mais de uma conta, aparece a ultima/ inviavel
+                                'WRBTR'      text-f12   'WRBTR',
+                                'KURSF'      text-f13   'KURSF',
+                                'NEWNUM'     text-f14   'NEWNUM',
+                                'ZFBDT'      text-f15   'ZFBDT',
+*                                'ZTERM'      text-f30   'ZTERM',
+*                                'MATNR'      text-f31   'MATNR',
+                                'KOSTL'      text-f16   'KOSTL',
+                                'PRCTR'      text-f17   'PRCTR',
+                                'AUFNR'      text-f18   'AUFNR',
+                                'ZUONR'      text-f19   'ZUONR',
+                                'SGTXT'      text-f20   'SGTXT',
+                                'MESSAGE_RESUMO'    text-f21   'MESSAGE_RESUMO'.  ""Mensagem de Log
+
+*  PERFORM f_sort_table.
+
+  st_layout-zebra             = abap_true. " Deixa layout em zebra
+  st_layout-colwidth_optimize = abap_true. " Otimizar tamanho de coluna ao valor do campo
+
+
+  " Chamada de função do ALV.
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+    EXPORTING
+      i_callback_program      = sy-repid
+      it_fieldcat             = it_fieldcat
+      i_save                  = abap_true
+      is_layout               = st_layout
+      it_sort                 = it_sort
+      i_callback_user_command = 'USER_COMMAND'
+    TABLES
+      t_outtab                = it_alv
+    EXCEPTIONS
+      program_error           = 1
+      OTHERS                  = 2.
+
+  IF sy-subrc IS NOT INITIAL.
+    MESSAGE ID sy-msgid TYPE 'S' NUMBER sy-msgno
+          WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4 DISPLAY LIKE 'E'.
+    LEAVE LIST-PROCESSING.
+  ENDIF.
+
+ENDFORM.
+```
  
    * **Funções chamadas:**<br>
    
        - REUSE_ALV_GRID_DISPLAY - 590
+     
+   ```abap
    
-   [Código]( https://github.com/danielasalomao/ajustecarga/blob/master/function%20reuse_alv_grid_display.txt)
+  function reuse_alv_grid_display.                            "#EC *
+*"----------------------------------------------------------------------
+*"*"Globale Schnittstelle:
+*"  IMPORTING
+*"     REFERENCE(I_INTERFACE_CHECK) DEFAULT SPACE
+*"     VALUE(I_BYPASSING_BUFFER) TYPE  CHAR01 DEFAULT SPACE
+*"     VALUE(I_BUFFER_ACTIVE) DEFAULT SPACE
+*"     REFERENCE(I_CALLBACK_PROGRAM) LIKE  SY-REPID DEFAULT SPACE
+*"     REFERENCE(I_CALLBACK_PF_STATUS_SET) TYPE  SLIS_FORMNAME DEFAULT
+*"       SPACE
+*"     REFERENCE(I_CALLBACK_USER_COMMAND) TYPE  SLIS_FORMNAME DEFAULT
+*"       SPACE
+*"     REFERENCE(I_CALLBACK_TOP_OF_PAGE) TYPE  SLIS_FORMNAME DEFAULT
+*"       SPACE
+*"     REFERENCE(I_CALLBACK_HTML_TOP_OF_PAGE) TYPE  SLIS_FORMNAME
+*"       DEFAULT SPACE
+*"     REFERENCE(I_CALLBACK_HTML_END_OF_LIST) TYPE  SLIS_FORMNAME
+*"       DEFAULT SPACE
+*"     REFERENCE(I_STRUCTURE_NAME) LIKE  DD02L-TABNAME OPTIONAL
+*"     REFERENCE(I_BACKGROUND_ID) TYPE  SDYDO_KEY DEFAULT SPACE
+*"     REFERENCE(I_GRID_TITLE) TYPE  LVC_TITLE OPTIONAL
+*"     REFERENCE(I_GRID_SETTINGS) TYPE  LVC_S_GLAY OPTIONAL
+*"     REFERENCE(IS_LAYOUT) TYPE  SLIS_LAYOUT_ALV OPTIONAL
+*"     REFERENCE(IT_FIELDCAT) TYPE  SLIS_T_FIELDCAT_ALV OPTIONAL
+*"     REFERENCE(IT_EXCLUDING) TYPE  SLIS_T_EXTAB OPTIONAL
+*"     REFERENCE(IT_SPECIAL_GROUPS) TYPE  SLIS_T_SP_GROUP_ALV OPTIONAL
+*"     REFERENCE(IT_SORT) TYPE  SLIS_T_SORTINFO_ALV OPTIONAL
+*"     REFERENCE(IT_FILTER) TYPE  SLIS_T_FILTER_ALV OPTIONAL
+*"     REFERENCE(IS_SEL_HIDE) TYPE  SLIS_SEL_HIDE_ALV OPTIONAL
+*"     REFERENCE(I_DEFAULT) DEFAULT 'X'
+*"     REFERENCE(I_SAVE) DEFAULT SPACE
+*"     REFERENCE(IS_VARIANT) LIKE  DISVARIANT STRUCTURE  DISVARIANT
+*"       OPTIONAL
+*"     REFERENCE(IT_EVENTS) TYPE  SLIS_T_EVENT OPTIONAL
+*"     REFERENCE(IT_EVENT_EXIT) TYPE  SLIS_T_EVENT_EXIT OPTIONAL
+*"     REFERENCE(IS_PRINT) TYPE  SLIS_PRINT_ALV OPTIONAL
+*"     REFERENCE(IS_REPREP_ID) TYPE  SLIS_REPREP_ID OPTIONAL
+*"     REFERENCE(I_SCREEN_START_COLUMN) DEFAULT 0
+*"     REFERENCE(I_SCREEN_START_LINE) DEFAULT 0
+*"     REFERENCE(I_SCREEN_END_COLUMN) DEFAULT 0
+*"     REFERENCE(I_SCREEN_END_LINE) DEFAULT 0
+*"     REFERENCE(I_HTML_HEIGHT_TOP) TYPE  I DEFAULT 0
+*"     REFERENCE(I_HTML_HEIGHT_END) TYPE  I DEFAULT 0
+*"     REFERENCE(IT_ALV_GRAPHICS) TYPE  DTC_T_TC OPTIONAL
+*"     REFERENCE(IT_HYPERLINK) TYPE  LVC_T_HYPE OPTIONAL
+*"     REFERENCE(IT_ADD_FIELDCAT) TYPE  SLIS_T_ADD_FIELDCAT OPTIONAL
+*"     REFERENCE(IT_EXCEPT_QINFO) TYPE  SLIS_T_QINFO_ALV OPTIONAL
+*"     REFERENCE(IR_SALV_FULLSCREEN_ADAPTER) TYPE REF TO
+*"        CL_SALV_FULLSCREEN_ADAPTER OPTIONAL
+*"  EXPORTING
+*"     REFERENCE(E_EXIT_CAUSED_BY_CALLER)
+*"     REFERENCE(ES_EXIT_CAUSED_BY_USER) TYPE  SLIS_EXIT_BY_USER
+*"  TABLES
+*"      T_OUTTAB
+*"  EXCEPTIONS
+*"      PROGRAM_ERROR
+*"----------------------------------------------------------------------
+  data: boolean type sap_bool.
+  data: l_getid type char30.
+*  data: exit    type ref to IF_EX_ALV_SWITCH_GRID_TO_LIST.
+
+  constants: c_badi_not_checked        type  i value 0,
+             c_badi_no_instance        type  i value 1,
+             c_badi_has_implementation type  i value 2.
+
+*>>AT
+  perform salv_at_reuse_display.
+*<<AT
+
+*Call of the BADI Interface IF_EX_ALV_SWITCH_GRID_TO_LIST
+  class cl_exithandler definition load.
+
+  if g_badi_instance_exit eq c_badi_not_checked.
+    call method cl_exithandler=>get_instance      "Aufruf der Factory-
+            exporting                                "Methode
+               exit_name                = 'ALV_SWITCH_GRID_LIST'
+               null_instance_accepted   = 'X'
+            changing
+               instance = g_exit.
+    if g_exit is initial.
+      g_badi_instance_exit = c_badi_no_instance.
+    else.
+      g_badi_instance_exit = c_badi_has_implementation.
+    endif.
+  endif.
+
+  if g_badi_instance_exit eq c_badi_has_implementation.
+    if not g_exit is initial.
+      call method g_exit->IS_SWITCH_TO_LIST_REQUESTED   "Aufruf des Add-Ins
+            exporting
+               alv_layout        = is_variant
+               username          = sy-uname
+            changing
+               value             = boolean.
+    endif.
+  endif.
+
+  get parameter id 'SALV_SWITCH_TO_LIST' field l_getid.
+  if sy-subrc eq 0.
+    translate l_getid to upper case.                     "#EC TRANSLANG
+    If l_getid eq 'X'.
+      boolean = if_salv_c_bool_sap=>true.
+    endif.
+  endif.
+
+  if ( is_layout-allow_switch_to_list ne space
+  and boolean eq if_salv_c_bool_sap=>true )
+  or ( sy-binpt eq abap_true ).
+    perform globals_push.
+    call function 'REUSE_ALV_LIST_DISPLAY'
+      exporting
+        i_interface_check        = i_interface_check
+        i_bypassing_buffer       = i_bypassing_buffer
+        i_buffer_active          = i_buffer_active
+        i_callback_program       = i_callback_program
+        i_callback_pf_status_set = i_callback_pf_status_set
+        i_callback_user_command  = i_callback_user_command
+        i_structure_name         = i_structure_name
+        is_layout                = is_layout
+        it_fieldcat              = it_fieldcat
+        it_excluding             = it_excluding
+        it_special_groups        = it_special_groups
+        it_sort                  = it_sort
+        it_filter                = it_filter
+        is_sel_hide              = is_sel_hide
+        i_default                = i_default
+        i_save                   = i_save
+        is_variant               = is_variant
+        it_events                = it_events
+        it_event_exit            = it_event_exit
+        is_print                 = is_print
+        is_reprep_id             = is_reprep_id
+        i_screen_start_column    = i_screen_start_column
+        i_screen_start_line      = i_screen_start_line
+        i_screen_end_column      = i_screen_end_column
+        i_screen_end_line        = i_screen_end_line
+        it_except_qinfo          = it_except_qinfo
+      importing
+        e_exit_caused_by_caller  = e_exit_caused_by_caller
+        es_exit_caused_by_user   = es_exit_caused_by_user
+      tables
+        t_outtab                 = t_outtab
+      exceptions
+        program_error            = 1
+        others                   = 2.
+    if sy-subrc <> 0.
+      message id sy-msgid type sy-msgty number sy-msgno
+              with sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+    endif.
+    perform globals_pop.
+    exit.
+  endif.
+
+  clear e_exit_caused_by_caller.
+  clear es_exit_caused_by_user.
+
+*... Trace?
+  if ( cl_alv_trace=>is_trace_on( ) eq 1 ).
+    create object mr_trace.
+
+    call method mr_trace->add_trace_item
+      exporting
+        i_trace_item = 'REUSE_ALV_GRID_DISPLAY'
+        is_vari_slis = is_variant
+        is_layo_slis = is_layout
+        is_prnt_slis = is_print
+        it_fcat_slis = it_fieldcat
+        it_sort_slis = it_sort
+        it_filt_slis = it_filter.
+  endif.
+
+  free memory id 'DYNDOS_FOR_ALV'.
+
+  perform globals_push.
+
+  gt_grid-flg_first_time = 'X'.
+
+  perform reprep_check.
+
+  g_repid = sy-repid.
+
+  if i_screen_start_column is initial and
+     i_screen_start_line   is initial and
+     i_screen_start_column   is initial and
+     i_screen_end_line     is initial.
+    gt_grid-flg_popup = space.
+    call screen 500.
+  else.
+    gt_grid-flg_popup = 'X'.
+    call screen 700
+              starting at i_screen_start_column i_screen_start_line
+              ending   at i_screen_end_column i_screen_end_line.
+  endif.
+
+  perform globals_pop.
+
+  clear g_repid.
+
+endfunction.
+
+```
 
 ##### H - FORM F_SET_FIELDCAT
 
