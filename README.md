@@ -130,7 +130,22 @@
  
   [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_user_command.txt)
     
-    
+'''abap
+FORM user_command USING ucomm    LIKE sy-ucomm
+                        selfield TYPE slis_selfield.
+
+  selfield-row_stable = 'X'.
+
+  CASE ucomm.
+    WHEN '&IC1'.
+*      if selfield-fieldname = 'ERRO'.
+      PERFORM exibir_popup_erros USING selfield-tabindex.
+*      endif.
+  ENDCASE.
+  CLEAR ucomm.
+
+ENDFORM.                    "user_command
+'''
     
 ---    
 
