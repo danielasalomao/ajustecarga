@@ -794,19 +794,59 @@ ENDFORM.
     - TH_ARFC_LOCAL_RESOURCES - 183, 394
     
     [Código](https://github.com/danielasalomao/ajustecarga/blob/master/FUNCTION%20TH_ARFC_LOCAL_RESOURCES.txt)
-    
  ```abap
- 
- ```
+ FUNCTION TH_ARFC_LOCAL_RESOURCES.
+*"----------------------------------------------------------------------
+*"*"Lokale Schnittstelle:
+*"  IMPORTING
+*"     REFERENCE(CHECK_CLIENT_ONLY) LIKE  SY-INDEX DEFAULT 0
+*"     VALUE(TRACE) TYPE  I DEFAULT 0
+*"  EXPORTING
+*"     VALUE(NORES) TYPE  I
+*"     VALUE(WAIT) TYPE  I
+*"     VALUE(REASON) TYPE  C
+*"     VALUE(MAXRES) TYPE  I
+*"     VALUE(IREASON) TYPE  I
+*"----------------------------------------------------------------------
+
+  DATA: TECH_REASON(255) TYPE C.
+
+  CALL 'ThSysInfo' ID 'OPCODE'            FIELD OPCODE_LOCAL_RESOURCES
+                   ID 'NORES'             FIELD NORES
+                   ID 'MAXRES'            FIELD MAXRES
+                   ID 'WAIT'              FIELD WAIT
+                   ID 'IREASON'           FIELD IREASON
+                   ID 'REASON'            FIELD TECH_REASON
+                   ID 'CHECK_CLIENT_ONLY' FIELD CHECK_CLIENT_ONLY
+                   ID 'TRACE'             FIELD TRACE.
+  PERFORM GET_REASON_TEXT USING IREASON CHANGING REASON.
+ENDFUNCTION.
+```
     
     - ZFFI_CARGA_PARTIDA_ABERTA - 191, 402  
     
     [Código](https://github.com/danielasalomao/ajustecarga/blob/master/FUNCTION%20zffi_carga_partida_aberta.txt)
+
+
     
     - CONVERSION_EXIT_ALPHA_INPUT - 259, 327   
     
-    [Código](https://github.com/danielasalomao/ajustecarga/blob/master/FUNCTION%20CONVERSION_EXIT_ALPHA_INPUT.txt)
- 
+    
+ ```abap
+FUNCTION CONVERSION_EXIT_ALPHA_INPUT.
+*"----------------------------------------------------------------------
+*"*"Lokale Schnittstelle:
+*"  IMPORTING
+*"     VALUE(INPUT) TYPE  CLIKE
+*"  EXPORTING
+*"     VALUE(OUTPUT) TYPE  CLIKE
+*"----------------------------------------------------------------------
+
+  CALL 'CONVERSION_EXIT_ALPHA_INPUT'  ID 'INPUT'  FIELD INPUT
+                                      ID 'OUTPUT' FIELD OUTPUT.
+
+ENDFUNCTION.
+```
 
 ##### E - FORM F_FIM_BAPI
 
