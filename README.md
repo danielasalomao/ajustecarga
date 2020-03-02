@@ -367,28 +367,437 @@ DATA gv_iserror TYPE c.
 
 ##### A - TELA DE SELEÇÃO
 
-  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/teladeselecao.txt)
+  ```abap
+  SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE text-001.     ""Selecione o arquivo.
+PARAMETERS: p_path  TYPE string OBLIGATORY,   " Caminho
+            p_teste AS CHECKBOX TYPE c DEFAULT ' '.
+SELECTION-SCREEN END OF BLOCK b1.
+```
 
 ##### B - FORM F_UPLOAD
-
- [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_upload.txt)
  
  * Lê o arquivo.
+ 
+ ```abap
+ FORM f_upload.
+
+*  DATA: l_string  TYPE string,
+*        l_caminho TYPE string.
+*
+*  CLEAR: l_string, l_caminho.
+*
+*  l_caminho = p_path.
+*
+*  OPEN DATASET l_caminho FOR INPUT IN
+*                         TEXT MODE ENCODING
+*                         DEFAULT WITH SMART LINEFEED.
+*
+*  WHILE sy-subrc IS INITIAL.
+*    READ DATASET l_caminho INTO l_string.
+*    CHECK sy-subrc IS INITIAL.
+*    CHECK sy-index GT 1. " Desprezar header
+*    PERFORM f_formatar_dados_arquivo USING l_string.
+*    CLEAR: l_string.
+*  ENDWHILE.
+*
+*  CLOSE DATASET l_caminho.
+*
+*  IF it_arq IS INITIAL.
+*    MESSAGE text-002 TYPE 'S' DISPLAY LIKE 'E'.
+*    LEAVE LIST-PROCESSING.
+*  ENDIF.
+
+*BCI:RRUBINO: Melhoria carga ZRFI_PARTIDAS_ABERTAS - 17.01.2019 - Inicio
+
+  DATA: it_datatab TYPE table_of_strings,
+        wa_datatab LIKE LINE OF it_datatab,
+        ld_lines   TYPE i,
+        ld_file    TYPE string,
+        l_string   TYPE string.
+
+  ld_file = p_path.
+
+  CALL METHOD cl_gui_frontend_services=>gui_upload
+    EXPORTING
+      filename = ld_file
+      filetype = 'ASC'
+    CHANGING
+      data_tab = it_datatab
+    EXCEPTIONS
+      OTHERS   = 1.
+
+  IF sy-subrc = 0.
+    IF it_datatab IS INITIAL.
+      MESSAGE text-002 TYPE 'S' DISPLAY LIKE 'E'.
+***Arquivo não contem registros / Tipo S??? Display like???
+      LEAVE LIST-PROCESSING.
+    ELSE.
+      LOOP AT it_datatab INTO wa_datatab.
+        CHECK sy-tabix GT 1. " Desprezar header
+        l_string = wa_datatab.
+        PERFORM f_formatar_dados_arquivo USING l_string.
+      ENDLOOP.
+    ENDIF.
+  ELSE.
+    MESSAGE text-007 TYPE 'S' DISPLAY LIKE 'E'.
+***Erro ao abrir arquivo  / Tipo S??? Display like???
+    LEAVE LIST-PROCESSING.
+  ENDIF.
+*BCI:RRUBINO: Melhoria carga ZRFI_PARTIDAS_ABERTAS - 17.01.2019 - Fim
+ENDFORM.
+ 
+ ```
 
 ##### C - FORM F_TVARV
-
- [Código](https://github.com/danielasalomao/ajustecarga/blob/master/form_f_tvarv.txt)
  
  * Recebe valores da TVARV.
+ 
+ ```abap
+ FORM f_tvarv .
+
+  " Se o objeto ainda não foi instanciado, cria-lo.
+  IF o_tvarv IS NOT BOUND.
+    CREATE OBJECT o_tvarv
+      EXPORTING
+        prefix    = c_prefixo
+        separator = c_separador.
+  ENDIF.
+
+  CALL METHOD o_tvarv->get_parameter
+    EXPORTING
+      suffix = c_sessao
+    IMPORTING
+      value  = gv_sessao.
+
+ENDFORM.
+ ```
 
 ##### D - FORM F_TRATA_ARQUIVO
+ 
+ ```abap
+ FORM f_trata_arquivo.
 
- [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_trata_arquivo.txt)
+  DATA: lw_arq      LIKE LINE OF it_arq,
+        l_newko(10) TYPE c,
+        l_zuonr     TYPE bseg-zuonr,
+        lwa_arq     TYPE ty_arq.
+
+  DATA: it_arq_sorted    TYPE TABLE OF ty_arq,
+        lv_ischangezuonr TYPE c.
+
+
+  CLEAR: lw_arq, l_newko, l_zuonr.
+
+  APPEND LINES OF it_arq TO it_arq_sorted.
+  SORT it_arq_sorted BY zuonr.
+
+*BCI:RRUBINO: Melhoria carga ZRFI_PARTIDAS_ABERTAS - 11.02.2019
+*  LOOP AT it_arq ASSIGNING FIELD-SYMBOL(<fs_arq>).
+  CLEAR it_alv.
+
+  LOOP AT it_arq_sorted ASSIGNING FIELD-SYMBOL(<fs_arq>).
+    AT FIRST.
+      l_zuonr    = <fs_arq>-zuonr.          "Atribuiçao  = xblnr referencia
+      vg_th_cont = 1.
+    ENDAT.
+
+* SSI - 1000017494
+*    IF  l_zuonr IS NOT INITIAL
+*    AND l_zuonr <> <fs_arq>-zuonr.
+
+    IF  l_zuonr <> <fs_arq>-zuonr.
+*
+      " Executar BAPI / COMMIT.
+      vg_act_jobs = vg_snd_jobs - vg_rcv_jobs.
+      WAIT UNTIL vg_act_jobs LT gv_sessao.
+
+      IF lwa_arq IS INITIAL.
+        lwa_arq = <fs_arq>.
+      ENDIF.
+
+      DO.
+
+        CALL FUNCTION 'TH_ARFC_LOCAL_RESOURCES'
+          IMPORTING
+            nores = vg_free.
+
+        CHECK vg_free GE 3.
+
+        CONCATENATE c_task vg_th_cont INTO vg_task_id.
+
+        CALL FUNCTION 'ZFFI_CARGA_PARTIDA_ABERTA'
+          STARTING NEW TASK vg_task_id
+          DESTINATION IN GROUP DEFAULT
+          PERFORMING f_fim_bapi ON END OF TASK
+          EXPORTING
+            p_arq                 = lwa_arq
+            doc_header            = wa_doc_header
+            p_teste               = p_teste
+          TABLES
+            it_accountgl          = it_accountgl
+            it_curr_amount        = it_curr_amount
+            it_accountpayable     = it_accountpayable
+            it_accountreceivable  = it_accountreceivable
+            it_extension2         = it_extension2
+          EXCEPTIONS
+            communication_failure = 1
+            system_failure        = 2
+            resource_failure      = 3.
+
+        IF sy-subrc EQ 3.
+          WAIT UP TO 1 SECONDS.
+        ELSE.
+          EXIT.
+        ENDIF.
+
+      ENDDO.
+
+      CLEAR: lwa_arq.
+
+      vg_snd_jobs = vg_snd_jobs + 1.
+      vg_th_cont  = vg_th_cont + 1.
+
+      CLEAR:
+        wa_doc_header,
+        wa_accountgl,
+        wa_accountpayable,
+        wa_accountreceivable,
+        wa_curr_amount,
+        gv_cont,
+        wa_extension2.
+
+      REFRESH:
+        it_accountgl,
+        it_accountpayable,
+        it_accountreceivable,
+        it_curr_amount,
+        it_extension2.
+
+    ENDIF.
+
+    lw_arq  = <fs_arq>.
+    l_zuonr = <fs_arq>-zuonr.
+    gv_cont = gv_cont + 1.
+
+    " Format 'DOCUMENTHEADER'
+    wa_doc_header-username   = sy-uname.     " User name
+    wa_doc_header-header_txt = <fs_arq>-bktxt. " Document Header Text
+    wa_doc_header-comp_code  = <fs_arq>-bukrs. " Company Code
+    wa_doc_header-doc_date   = <fs_arq>-bldat. " Document Date in Document
+    wa_doc_header-pstng_date = <fs_arq>-budat. " Posting Date in the Document
+    wa_doc_header-doc_type   = <fs_arq>-blart. " Document Type
+    wa_doc_header-ref_doc_no = <fs_arq>-xblnr. " Reference Document Number
+
+    IF lwa_arq IS INITIAL.
+      lwa_arq = <fs_arq>.
+    ENDIF.
+
+    " Exit de conversão para utilização da conta correta com apenas 10 caracteres.
+    CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+      EXPORTING
+        input  = <fs_arq>-newko
+      IMPORTING
+        output = l_newko.
+
+    <fs_arq>-newko = l_newko.
+
+
+***Se chave de lançamento(bschl).
+    CASE <fs_arq>-bschl.
+
+***Fornecedor
+      WHEN c_ch_cred_fornec   "21
+        OR c_ch_razao_fornec  "29
+        OR c_ch_fat_fornec.   "31
+
+        " Format 'ACCOUNTPAYABLE'
+        wa_accountpayable-itemno_acc    = gv_cont.        " Invoice Number
+        wa_accountpayable-vendor_no     = <fs_arq>-newko. " Vendor Number
+        wa_accountpayable-comp_code     = <fs_arq>-bukrs. " Company Code
+        wa_accountpayable-item_text     = <fs_arq>-sgtxt.
+        wa_accountpayable-profit_ctr    = <fs_arq>-prctr.
+        wa_accountpayable-alloc_nmbr    = <fs_arq>-zuonr.
+        wa_accountpayable-bline_date    = <fs_arq>-zfbdt.
+        wa_accountpayable-businessplace = <fs_arq>-bupla.
+        wa_accountpayable-pymt_meth     = <fs_arq>-zlsch.
+        wa_accountpayable-bank_id       = <fs_arq>-hbkid.
+        wa_accountpayable-ref_key_3     = <fs_arq>-xref3.
+
+
+
+* SSI - 1000017494
+        wa_accountpayable-pmnttrms      = <fs_arq>-zterm. " Chave de condições de pagamento
+*
+        APPEND wa_accountpayable TO it_accountpayable.
+
+        " Format 'CURR_AMOUNT'
+        wa_curr_amount-itemno_acc   = gv_cont.        " Accounting Document Line Item Number
+        wa_curr_amount-currency_iso = <fs_arq>-waers. " Currency
+        wa_curr_amount-amt_doccur   = <fs_arq>-wrbtr. " Amount
+        APPEND wa_curr_amount TO it_curr_amount.
+
+
+***Saldo GL
+
+      WHEN c_ch_lanc_cred   "50
+        OR c_ch_lanc_deb.   "40
+
+        "Adicionando Ordem e Centro de Lucro
+        IF <fs_arq>-bschl = c_ch_lanc_deb.        " Se for igual a 40
+          wa_accountgl-orderid = <fs_arq>-aufnr.  "??? aufnr???
+        ENDIF.
+
+        " Format 'ACCOUNTGL'
+        wa_accountgl-itemno_acc   = gv_cont.        " Accounting Document Line Item Number
+        wa_accountgl-gl_account   = <fs_arq>-newko. " Revenue GL Account                 "Conta contabil
+        wa_accountgl-comp_code    = <fs_arq>-bukrs. " Company Code                       "Empresa
+        wa_accountgl-pstng_date   = <fs_arq>-budat. " Posting Date in the Document       "Data de Lançamento
+        wa_accountgl-item_text    = <fs_arq>-sgtxt.                   "Texto do item
+        wa_accountgl-alloc_nmbr   = <fs_arq>-zuonr.                   "Atribuição = xblnr referencia
+        wa_accountgl-costcenter   = <fs_arq>-kostl.                   "Centro de custo
+        wa_accountgl-profit_ctr   = <fs_arq>-prctr.                   "Centro de lucro
+        wa_accountgl-ref_key_3    = <fs_arq>-xref3.                   "Chav Referencia
+
+* SSI - 1000017494
+        wa_accountgl-plant        = <fs_arq>-werks.                   "Centro (CM01)
+
+        CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+          EXPORTING
+            input  = <fs_arq>-matnr
+          IMPORTING
+            output = <fs_arq>-matnr.
+
+        wa_accountgl-material     = <fs_arq>-matnr.
+        wa_accountgl-po_number    = <fs_arq>-ebeln.                 "Doc Material
+*
+        APPEND wa_accountgl TO it_accountgl.
+
+        wa_extension2-structure  = 'EXTENSION2'.
+        wa_extension2-valuepart1 = <fs_arq>-bupla.
+        wa_extension2-valuepart2 = wa_accountgl-itemno_acc.
+        APPEND wa_extension2 TO it_extension2.
+
+        " Format 'CURR_AMOUNT'
+        wa_curr_amount-itemno_acc   = gv_cont.        " Accounting Document Line Item Number
+        wa_curr_amount-currency_iso = <fs_arq>-waers. " Currency
+        wa_curr_amount-amt_doccur   = <fs_arq>-wrbtr. " Amount
+        APPEND wa_curr_amount TO it_curr_amount.
+
+
+***Clientes
+
+      WHEN c_ch_fat_cli    "01
+        OR c_ch_cred_cli   "11
+        OR c_ch_razao_cli. "19
+
+        " fORMAT 'accountreceivable'
+        wa_accountreceivable-itemno_acc    = gv_cont.        " Accounting Document Line Item Number
+        wa_accountreceivable-customer      = <fs_arq>-newko. " Customer Account
+        wa_accountreceivable-comp_code     = <fs_arq>-bukrs. " Company Code
+        wa_accountreceivable-item_text     = <fs_arq>-sgtxt.
+        wa_accountreceivable-profit_ctr    = <fs_arq>-prctr.
+        wa_accountreceivable-alloc_nmbr    = <fs_arq>-zuonr.
+        wa_accountreceivable-bline_date    = <fs_arq>-zfbdt.
+        wa_accountreceivable-businessplace = <fs_arq>-bupla.
+        wa_accountreceivable-pymt_meth     = <fs_arq>-zlsch.
+        wa_accountreceivable-bank_id       = <fs_arq>-hbkid.
+        wa_accountreceivable-ref_key_3     = <fs_arq>-xref3.
+
+* SSI - 1000017494
+        wa_accountreceivable-pmnttrms      = <fs_arq>-zterm. " Chave de condições de pagamento
+*
+
+        APPEND wa_accountreceivable TO it_accountreceivable.
+
+        " Format 'CURR_AMOUNT'
+        wa_curr_amount-itemno_acc   = gv_cont.        " Accounting Document Line Item Number
+        wa_curr_amount-currency_iso = <fs_arq>-waers. " Currency
+        wa_curr_amount-amt_doccur   = <fs_arq>-wrbtr. " Amount
+        APPEND wa_curr_amount TO it_curr_amount.
+
+    ENDCASE.
+*** Fim SE chave de lançamento(bschl).
+
+
+    " Processar ultimo registro
+    AT LAST.
+
+      " Executar BAPI / COMMIT.
+      vg_act_jobs = vg_snd_jobs - vg_rcv_jobs.
+      WAIT UNTIL vg_act_jobs LT gv_sessao.
+
+      DO.
+
+        CALL FUNCTION 'TH_ARFC_LOCAL_RESOURCES'
+          IMPORTING
+            nores = vg_free.
+
+        CHECK vg_free GE 3.
+
+        CONCATENATE c_task vg_th_cont INTO vg_task_id.
+
+        CALL FUNCTION 'ZFFI_CARGA_PARTIDA_ABERTA'
+          STARTING NEW TASK vg_task_id
+          DESTINATION IN GROUP DEFAULT
+          PERFORMING f_fim_bapi ON END OF TASK
+          EXPORTING
+            p_arq                 = lwa_arq
+            doc_header            = wa_doc_header
+            p_teste               = p_teste
+          TABLES
+            it_accountgl          = it_accountgl
+            it_curr_amount        = it_curr_amount
+            it_accountpayable     = it_accountpayable
+            it_accountreceivable  = it_accountreceivable
+            it_extension2         = it_extension2
+          EXCEPTIONS
+            communication_failure = 1
+            system_failure        = 2
+            resource_failure      = 3.
+
+        IF sy-subrc EQ 3.
+          WAIT UP TO 1 SECONDS.
+        ELSE.
+          EXIT.
+        ENDIF.
+      ENDDO.
+
+      CLEAR: lwa_arq.
+
+      vg_snd_jobs = vg_snd_jobs + 1.
+      vg_th_cont  = vg_th_cont + 1.
+
+      CLEAR:
+        wa_doc_header,
+        wa_accountgl,
+        wa_accountpayable,
+        wa_accountreceivable,
+        wa_curr_amount,
+        gv_cont,
+        wa_extension2.
+
+      REFRESH:
+        it_accountgl,
+        it_accountpayable,
+        it_accountreceivable,
+        it_curr_amount,
+        it_extension2.
+
+    ENDAT.
+
+  ENDLOOP.
+
+ENDFORM.
+ ```
  
  * **Funções chamadas:**<br>
     - TH_ARFC_LOCAL_RESOURCES - 183, 394
     
     [Código](https://github.com/danielasalomao/ajustecarga/blob/master/FUNCTION%20TH_ARFC_LOCAL_RESOURCES.txt)
+    
+ ```abap
+ 
+ ```
     
     - ZFFI_CARGA_PARTIDA_ABERTA - 191, 402  
     
