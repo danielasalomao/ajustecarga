@@ -4,11 +4,102 @@
 
 ### 1 - ZRFI_PARTIDAS_ABERTAS_CPY
 
- [Código](https://github.com/danielasalomao/ajustecarga/blob/master/ZRFI_PARTIDAS_ABERTAS_cpy.txt)
+```abap
+
+*----------------------------------------------------------------------*
+* Includes
+*----------------------------------------------------------------------*
+
+INCLUDE ZRFI_PARTIDAS_ABERTASTOP_CPY.
+*INCLUDE zrfi_partidas_abertastop.
+*INCLUDE zrfi_partidas_abertastop.  " TOP Include
+INCLUDE ZRFI_PARTIDAS_ABERTASF01_CPY.
+*INCLUDE zrfi_partidas_abertasf01.
+*INCLUDE zrfi_partidas_abertasf01.  " FORMs Include
+
+*----------------------------------------------------------------------*
+* START-OF-SELECTION
+*----------------------------------------------------------------------*
+* Processamento principal do programa
+*----------------------------------------------------------------------*
+START-OF-SELECTION.
+
+  " Limpa variáveis e tabelas internas.
+  PERFORM f_limpa_var.
+
+  " Recebe valores da TVARV
+  PERFORM f_tvarv.
+
+  " Lê o arquivo.
+  PERFORM f_upload.
+
+  " Trata o arquivo e grava na tabela.
+ " PERFORM f_trata_arquivo.
+
+  "Trata arquivo
+  "Verifica se algum documento contem erro.
+  "Commit apenas se todos ok.
+  PERFORM f_trata_arquivo_verifica_erro.
+
+"  WAIT UNTIL vg_rcv_jobs EQ vg_snd_jobs.
+
+
+
+  " Chama a tela do ALV com os documentos NÃO gravados.
+  PERFORM f_cria_alv.
+
+* Elementos de texto
+*----------------------------------------------------------
+* F01	Status
+* F02	Data no documento
+* F03	Empresa
+* F04	Data de lançamento no documento
+* F05	Mês do exercício
+* F06	Tipo de documento
+* F07	Moeda
+* F08	Nº documento de referência
+* F09	Texto de cabeçalho de documento
+* F10	Chave de lançamento
+* F11	Conta
+* F12	Montante
+* F13	Taxa de conversão
+* F14	Indicação de Razão Especial
+* F15	Data base
+* F16	Centro de Custo
+* F17	Centro de Lucro
+* F18	Ordem Interna
+* F19	Atribuição
+* F20	Texto do Item
+* F21	Mensagem de Log
+
+* Textos de seleção
+*----------------------------------------------------------
+* P_PATH Caminho
+
+*BCI:RRUBINO: Melhoria carga ZRFI_PARTIDAS_ABERTAS - 17.01.2019 - Inicio
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_path.
+  DATA gd_subrc TYPE i.
+  DATA it_file TYPE filetable.
+
+  CALL METHOD cl_gui_frontend_services=>file_open_dialog
+    EXPORTING
+      window_title            = 'Selecione o arquivo de carga no formato csv'
+      default_extension       = '*.csv'
+      file_filter             = 'Separado por ; (*.csv)|*.csv|'
+    CHANGING
+      file_table              = it_file
+      rc                      = gd_subrc
+    EXCEPTIONS
+      file_open_dialog_failed = 1
+      cntl_error              = 2
+      error_no_gui            = 3
+      OTHERS                  = 4.
+  IF sy-subrc = 0.
+    READ TABLE it_file INDEX 1 INTO p_path.
+  ENDIF.
+```
 
 #### 1.1 - INCLUDE ZRFI_PARTIDAS_ABERTASTOP_CPY.
-
- [Código](https://github.com/danielasalomao/ajustecarga/blob/master/Include_ZRFI_PARTIDASTOP_CPY.txt)  
  
 * Report
 * Types
@@ -20,6 +111,257 @@
 * Variáveis
 * Constantes
 * Objetos
+
+```abap
+REPORT zrfi_partidas_abertas.
+
+*----------------------------------------------------------------------*
+* Types
+*----------------------------------------------------------------------*
+TYPES:
+
+
+***campos da planilha do excel
+  BEGIN OF ty_arq,
+
+
+***data de lançamento: 31122019
+    budat     TYPE bkpf-budat,
+
+***periodo:   12
+    monat     TYPE bkpf-monat,
+
+***empresa: COMP
+    bukrs     TYPE bkpf-bukrs,
+
+* SSI - 1000017494
+***centro:CM01
+***Centro : Campo WERKS da tabela BSEG. Tem o objetivo de informar qual o centro se refere nos lançamentos contábeis em contas de estoque;
+    werks     TYPE bseg-werks,
+*
+
+***tipo de documento: AB
+    blart     TYPE bkpf-blart,
+
+***data de documento: 31122019
+    bldat     TYPE bkpf-bldat,
+
+***moeda: BRL
+    waers     TYPE bkpf-waers,
+
+***taxa de conversao: null
+    kursf(12) TYPE c, "bkpf-KURSF,
+
+***texto cabeçalho: null
+    bktxt     TYPE bkpf-bktxt,
+
+***referencia: 221331
+    xblnr     TYPE bkpf-xblnr,
+
+***chave de lancamento: 40
+    bschl     TYPE bseg-bschl,
+
+***conta contabil: 113010001
+    newko     TYPE bbseg-newko,
+
+***indicacao do razao: null
+    newnum    TYPE bbseg-newum,
+
+***montante: 261.04
+    wrbtr     TYPE bseg-wrbtr,
+
+***data base: 31122019
+    zfbdt     TYPE bseg-zfbdt,
+
+* SSI - 1000017494
+***cond pag: null
+***•  Cond. De Pagamento: Campo ZTERM da tabela BSEG. O objetivo da inclusão desse campo ao layout é que os vencimentos das partidas
+***   sejam calculados pelo SAP automaticamente já que a Data Base já está disponível no layout atual.
+    zterm     TYPE bseg-zterm,
+
+*SSI - 1000017494
+*** •	Material: Campo MATNR da tabela BSEG. O objetivo da inclusão desse campo no layout é identificar o material referente
+***   ao lançamento efetuado nas contas de estoques/resultado.
+    matnr     TYPE bseg-matnr,
+
+
+***centro de custo: null
+    kostl     TYPE bseg-kostl,
+
+***centro de lucro: null
+    prctr     TYPE bseg-prctr,
+
+***ordem interna: null
+    aufnr     TYPE bseg-aufnr,
+
+***atribuicao: 221331
+    zuonr     TYPE bseg-zuonr,
+
+***texto do item: VLR TRANSF ICMS NF 221331
+    sgtxt     TYPE bseg-sgtxt,
+
+***local de negocio: 0001
+    bupla     TYPE bseg-bupla, "novos campos ->.
+
+* SSI - 1000017494
+***•  Documento de Material: Campo EBELN da tabela BSEG. Tem o objetivo de informar o documento de material para lançamentos
+***   que se referem a entradas de mercadoria;  null
+    ebeln     TYPE bseg-ebeln,
+*
+
+***chav referencia: null
+    xref3     TYPE bseg-xref3,
+
+***nsolicitacao: null
+    anfbn     TYPE bseg-anfbn,
+
+***empresa solicitação: null
+    anfbu     TYPE bseg-anfbu,
+
+***ano solicitacao: null
+    anfbj     TYPE bseg-anfbj,
+
+***banco empresa: null
+    hbkid     TYPE bseg-hbkid,
+
+***forma de pagamento: null
+    zlsch     TYPE bseg-zlsch, "novos campos <-.
+
+  END OF ty_arq,
+
+
+
+***final campos da planilha excel
+
+
+
+  BEGIN OF ty_alv,
+    stats   TYPE icon-id,          " Status
+    bukrs   TYPE bkpf-bukrs,       " Empresa
+    bldat   TYPE bkpf-bldat,       " Data no documento
+* SSI - 1000017494
+    werks   TYPE bseg-werks,       "Centro
+    budat   TYPE bkpf-budat,       " Data de lançamento no documento
+    monat   TYPE bkpf-monat,       " Mês do exercício
+    blart   TYPE bkpf-blart,       " Tipo de documento
+    waers   TYPE bkpf-waers,       " Moeda
+    xblnr   TYPE bkpf-xblnr,       " Nº documento de referência
+    bktxt   TYPE bkpf-bktxt,       " Texto de cabeçalho de documento
+    bschl   TYPE bseg-bschl,       " Chave de lançamento
+    newko   TYPE rf05a-newko,      " Conta ou matchcode
+    wrbtr   TYPE bseg-wrbtr,       " Montante
+    kursf   TYPE bkpf-kursf,       " Taxa de conversão
+    newnum  TYPE bbseg-newum,      " Indicação de Razão Especial
+    zfbdt   TYPE bseg-zfbdt,       " Data base
+* SSI - 1000017494
+    zterm   TYPE bseg-zterm,     "Cond. de Pagamento
+    matnr   TYPE bseg-matnr,     " Material
+    kostl   TYPE bseg-kostl,       " Centro de Custo
+    prctr   TYPE bseg-prctr,       " Centro de Lucro
+    aufnr   TYPE bseg-aufnr,       " Ordem Interna
+    zuonr   TYPE bseg-zuonr,       " Atribuição
+    sgtxt   TYPE bseg-sgtxt,       " Texto do Item
+    bupla   TYPE bseg-bupla,       " Local de negócios
+* SSI - 1000017494
+    ebeln   TYPE bseg-ebeln,     " Documento de material
+    xref3   TYPE bseg-xref3,       " Chave de referência para item de doc.
+    anfbn   TYPE bseg-anfbn,       " Nº Solicitação
+    anfbu   TYPE bseg-anfbu,       " Empresa da Solicitação de L/C
+    anfbj   TYPE bseg-anfbj,       " Ano da Solicitação de L/C
+    hbkid   TYPE bseg-hbkid,       " Banco empresa
+    zlsch   TYPE bseg-zlsch,       " Forma de pagamento
+    message TYPE c LENGTH 300,     " Log Message
+    belnr   TYPE bkpf-belnr,       "Nº documento
+    gjahr(4)   type c,              "Exercicio
+    message_resumo TYPE bapiret2-message, " Log Message
+
+  END OF ty_alv.
+
+
+*----------------------------------------------------------------------*
+* Tabelas Internas
+*----------------------------------------------------------------------*
+
+DATA:
+  it_alv               TYPE TABLE OF ty_alv,
+  wa_alv               TYPE ty_alv, "BCI:RRUBINO: Melhoria carga ZRFI_PARTIDAS_ABERTAS
+  it_arq               TYPE TABLE OF ty_arq,
+  it_fieldcat          TYPE slis_t_fieldcat_alv,
+  it_accountgl         TYPE TABLE OF bapiacgl09,
+  it_curr_amount       TYPE TABLE OF bapiaccr09,
+  it_accountpayable    TYPE TABLE OF bapiacap09,
+  it_accountreceivable TYPE TABLE OF bapiacar09,
+  it_extension2        TYPE TABLE OF bapiparex,
+  it_sort              TYPE slis_t_sortinfo_alv.
+
+
+FIELD-SYMBOLS <fs_alv> TYPE ty_alv. "BCI:RRUBINO: Melhoria carga ZRFI_PARTIDAS_ABERTAS
+*----------------------------------------------------------------------*
+* Work Areas
+*----------------------------------------------------------------------*
+DATA:
+  wa_doc_header        TYPE bapiache09,
+  wa_curr_amount       LIKE LINE OF it_curr_amount,
+  wa_accountgl         LIKE LINE OF it_accountgl,
+  wa_accountpayable    LIKE LINE OF it_accountpayable,
+  wa_accountreceivable LIKE LINE OF it_accountreceivable,
+  wa_extension2        LIKE LINE OF it_extension2,
+  wa_sort              TYPE slis_sortinfo_alv.
+
+*----------------------------------------------------------------------*
+* Estruturas
+*----------------------------------------------------------------------*
+DATA:
+  st_layout TYPE slis_layout_alv.
+
+*----------------------------------------------------------------------*
+* Variáveis
+*----------------------------------------------------------------------*
+DATA:
+  gv_cont(4)  TYPE n,
+  gv_sessao   TYPE i,
+
+  vg_snd_jobs TYPE i VALUE 0, "Jobs enviado
+  vg_rcv_jobs TYPE i VALUE 0, "Jobs executados
+  vg_act_jobs TYPE i VALUE 0, "Jobs Ativos
+  vg_free     TYPE i,
+  vg_th_cont  TYPE char10,
+  vg_task_id  TYPE string.
+
+*----------------------------------------------------------------------*
+* Constantes
+*----------------------------------------------------------------------*
+
+CONSTANTS:
+
+  " Fornecedor
+  c_ch_cred_fornec(2)  TYPE c VALUE '21',
+  c_ch_razao_fornec(2) TYPE c VALUE '29',
+  c_ch_fat_fornec(2)   TYPE c VALUE '31',
+
+  " Saldo GL
+  c_ch_lanc_cred(2)    TYPE c VALUE '50',
+  c_ch_lanc_deb(2)     TYPE c VALUE '40',
+
+  " Clientes
+  c_ch_fat_cli(2)      TYPE c VALUE '01',
+  c_ch_cred_cli(2)     TYPE c VALUE '11',
+  c_ch_razao_cli(2)    TYPE c VALUE '19',
+
+  " TVARV
+  c_prefixo            TYPE string VALUE 'Z',
+  c_separador          TYPE char01 VALUE '_',
+  c_sessao             TYPE string VALUE 'FI_NUM_SESSAO',
+  c_task               TYPE char10 VALUE 'TASK'.
+
+*----------------------------------------------------------------------*
+* Objetos
+*----------------------------------------------------------------------*
+DATA:
+  o_tvarv TYPE REF TO zcl_tvarv.
+
+DATA gv_iserror TYPE c.
+```
 
 #### 1.2 - INCLUDE ZRFI_PARTIDAS_ABERTASF01_CPY.
 
