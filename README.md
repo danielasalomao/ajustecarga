@@ -824,8 +824,229 @@ ENDFUNCTION.
     
    - ZFFI_CARGA_PARTIDA_ABERTA - 191, 402  
     
-    [Código](https://github.com/danielasalomao/ajustecarga/blob/master/FUNCTION%20zffi_carga_partida_aberta.txt)
+```abap
+FUNCTION zffi_carga_partida_aberta.
+*"----------------------------------------------------------------------
+*"*"Interface local:
+*"  IMPORTING
+*"     VALUE(P_ARQ) TYPE  ZBFI_S_ARQ_CARGA_PARTIDA_ABERT
+*"     VALUE(DOC_HEADER) TYPE  BAPIACHE09
+*"     VALUE(P_TESTE) TYPE  CHAR01
+*"  TABLES
+*"      T_ALV STRUCTURE  ZBFI_S_ARQ_ALV_CARGA_PT_ABERT OPTIONAL
+*"      IT_ACCOUNTGL STRUCTURE  BAPIACGL09 OPTIONAL
+*"      IT_CURR_AMOUNT STRUCTURE  BAPIACCR09 OPTIONAL
+*"      IT_ACCOUNTPAYABLE STRUCTURE  BAPIACAP09 OPTIONAL
+*"      IT_ACCOUNTRECEIVABLE STRUCTURE  BAPIACAR09 OPTIONAL
+*"      IT_EXTENSION2 STRUCTURE  BAPIPAREX OPTIONAL
+*"----------------------------------------------------------------------
 
+  DATA:
+    lv_obj_key    TYPE bapiache09-obj_key, "NEEDED
+    lv_wrbtr      TYPE char20,
+    lv_text_gjahr TYPE char30,  """
+    lv_belnr      TYPE char10,       """
+    ce_fi         TYPE char10,
+    it_fi         TYPE char10.
+
+  DATA:
+    it_return TYPE TABLE OF bapiret2,
+    wa_return LIKE LINE OF it_return.
+
+  DATA: gv_message TYPE string,
+        gv_kursf   TYPE char12.
+  DATA: wa_alv         LIKE LINE OF t_alv,
+        wa_curr_amount TYPE bapiaccr09, "SSI 9000075165
+        lv_deb         TYPE char30, "SSI 9000075165
+        lv_cred        TYPE char30. "SSI 9000075165
+
+
+  DATA: lv_text_bukrs TYPE string,
+        lv_text_blart TYPE string,
+        lv_text_xblnr TYPE string,
+        lv_text_newko TYPE string,
+        lv_text_wrbtr TYPE string,
+        lv_text_zuonr TYPE string,
+        lv_text_belnr TYPE string, "SSI 9000075165
+        lv_text_descr TYPE string,
+        lv_text_cred  TYPE string, "SSI 9000075165
+        lv_text_deb   TYPE string, "SSI 9000075165
+        lv_text_ce_fi TYPE string,
+        lv_text_it_fi TYPE string.
+
+  DATA lv_subrc TYPE sy-subrc.
+
+  IF p_teste IS INITIAL.
+    CALL FUNCTION 'BAPI_ACC_DOCUMENT_POST'
+      EXPORTING
+        documentheader    = doc_header
+      IMPORTING
+        obj_key           = lv_obj_key ##NEEDED
+      TABLES
+        accountgl         = it_accountgl
+        accountreceivable = it_accountreceivable
+        accountpayable    = it_accountpayable
+        currencyamount    = it_curr_amount
+        extension2        = it_extension2
+        return            = it_return.
+
+    CLEAR lv_obj_key.
+    lv_subrc = sy-subrc.
+  ELSE.
+    CALL FUNCTION 'BAPI_ACC_DOCUMENT_CHECK'
+      EXPORTING
+        documentheader    = doc_header
+      TABLES
+        accountgl         = it_accountgl
+        accountreceivable = it_accountreceivable
+        accountpayable    = it_accountpayable
+        currencyamount    = it_curr_amount
+        extension2        = it_extension2
+        return            = it_return.
+
+    lv_subrc = sy-subrc.
+  ENDIF.
+
+
+  IF lv_subrc IS INITIAL.
+    IF p_teste IS INITIAL.
+      CALL FUNCTION 'BAPI_TRANSACTION_COMMIT'
+        EXPORTING
+          wait = 'X'.
+    ENDIF.
+    DELETE it_return WHERE number = 609.  """Há erro no documento: BKPFF $ ERDCLNT150
+    DELETE it_return WHERE number = 002.  """Nenhuma informação de item transferida para a contabilidade
+
+    lv_text_bukrs = |Empresa: { p_arq-bukrs }|.
+    lv_text_blart = |Tipo de documento: { p_arq-blart }|.
+    lv_text_xblnr = |Documento referência: { p_arq-xblnr }|.
+    lv_text_newko = |Conta para o item seguinte: { p_arq-newko }|.
+    lv_text_wrbtr = |Montante em moeda do documento: { lv_wrbtr }|.
+    lv_text_zuonr = |Atribuição: { p_arq-zuonr }|.
+    lv_text_gjahr = |Exercício: { p_arq-budat(4) } |.
+    lv_text_descr = |Descrição: simulação |.
+
+    LOOP AT it_return INTO wa_return.
+
+      IF  wa_return-type EQ 'S'.
+        lv_wrbtr = p_arq-wrbtr.
+        IF p_teste IS INITIAL.
+          lv_text_belnr = |Nº Documento: { wa_return-message_v2(10) }|.
+          lv_belnr  = wa_return-message_v2(10).
+        ELSE.
+          lv_text_belnr = |Nº Documento: simulação|.
+        ENDIF.
+
+        CONCATENATE 'S' 'Registro carregado com sucesso' lv_text_belnr lv_text_gjahr lv_text_bukrs lv_text_blart lv_text_xblnr lv_text_newko lv_text_wrbtr lv_text_zuonr lv_text_descr INTO gv_message SEPARATED BY ';'.
+        wa_alv-stats   = icon_green_light.            "OK
+
+
+      ELSEIF  wa_return-type EQ 'W'.
+        lv_wrbtr = p_arq-wrbtr.
+        IF p_teste IS INITIAL.
+          lv_text_belnr = |Nº Documento: { wa_return-message_v2(10) }|.
+        ELSE.
+          lv_text_belnr = |Nº Documento: simulação|.
+        ENDIF.
+        CONCATENATE 'W' lv_text_belnr lv_text_gjahr lv_text_bukrs lv_text_blart lv_text_xblnr lv_text_newko lv_text_wrbtr lv_text_zuonr lv_text_descr INTO gv_message SEPARATED BY ';'.
+        wa_alv-stats   = icon_yellow_light.            "OK
+
+      ELSEIF wa_return-type EQ 'E'. " wa_return-type EQ 'E'.
+* Pular o registro que não insteressa como erro informativo.
+        IF wa_return-number EQ 609 OR wa_return-number EQ 002.  "ID = RW TYPE E
+          CONTINUE.
+        ELSE.
+*Início alteração - Daniela Salomão Santa Clara - 19/02/20 - 9000075165
+          IF wa_return-id EQ 'FMAVC' AND wa_return-number EQ 005.   "ID = FMAVC TYPE E """""
+            ce_fi = p_arq-kostl.
+            SELECT fipos FROM skb1 INTO it_fi.
+            ENDSELECT.
+
+            lv_text_ce_fi = |Centro Financeiro: { ce_fi } |.
+            lv_text_it_fi = |Item Financeiro: { it_fi } |.
+
+            wa_alv-stats = icon_red_light.
+            "lv_wrbtr = p_arq_wrbtr.
+            CONCATENATE 'E' wa_return-message lv_text_gjahr lv_text_ce_fi lv_text_it_fi INTO gv_message SEPARATED BY ';'.
+
+          ELSE.
+
+
+            CLEAR: lv_deb, lv_cred.
+            "
+            LOOP AT it_curr_amount INTO wa_curr_amount.
+              IF wa_curr_amount-amt_doccur > 0.
+                lv_deb = lv_deb + wa_curr_amount-amt_doccur.
+              ELSE.
+                lv_cred = lv_cred - wa_curr_amount-amt_doccur.
+              ENDIF.
+            ENDLOOP.
+
+
+            lv_text_deb = |Total Debito: { lv_deb } |.
+            lv_text_cred = |Total Credito: { lv_cred } |.
+
+            wa_alv-stats   = icon_red_light.            "OK
+            lv_wrbtr = p_arq-wrbtr.
+            "CLEAR wa_return-message.
+*          CONCATENATE 'Erro' wa_return-message p_arq-bukrs p_arq-blart p_arq-xblnr p_arq-newko lv_wrbtr p_arq-zuonr INTO gv_message SEPARATED BY ';'.
+            CONCATENATE 'E' wa_return-message lv_text_gjahr lv_text_bukrs lv_text_blart lv_text_xblnr lv_text_newko lv_text_wrbtr lv_text_zuonr lv_text_descr lv_text_deb lv_text_cred INTO gv_message SEPARATED BY ';'.
+          ENDIF.
+        ENDIF.
+*Fim alteração - Daniela Salomão Santa Clara - 19/02/20 - 9000075165
+        ENDIF.
+
+
+        gv_kursf = p_arq-kursf.
+        TRANSLATE gv_kursf USING ',.'.
+
+
+        wa_alv-bldat   = p_arq-bldat.       " Data no documento
+        wa_alv-bukrs   = p_arq-bukrs.       " Empresa
+        wa_alv-budat   = p_arq-budat.       " Data de lançamento no documento
+        wa_alv-monat   = p_arq-monat.       " Mês do exercício
+        wa_alv-blart   = p_arq-blart.       " Tipo de documento
+        wa_alv-waers   = p_arq-waers.       " Moeda
+        wa_alv-xblnr   = p_arq-xblnr.       " Nº documento de referência
+        wa_alv-bktxt   = p_arq-bktxt.       " Texto de cabeçalho de documento
+        wa_alv-bschl   = p_arq-bschl.       " Chave de lançamento
+        wa_alv-newko   = p_arq-newko.       " Conta
+        wa_alv-wrbtr   = p_arq-wrbtr.       " Montante
+        wa_alv-kursf   = gv_kursf.          " Taxa de conversão
+        wa_alv-newnum  = p_arq-newnum.      " Indicação de Razão Especial
+        wa_alv-zfbdt   = p_arq-zfbdt.       " Data base
+        wa_alv-kostl   = p_arq-kostl.       " Centro de Custo
+        wa_alv-prctr   = p_arq-prctr.       " Centro de Lucro
+        wa_alv-aufnr   = p_arq-aufnr.       " Ordem Interna
+        wa_alv-zuonr   = p_arq-zuonr.       " Atribuição
+        wa_alv-sgtxt   = p_arq-sgtxt.       " Texto do Item
+        wa_alv-message = gv_message.        " Mensagem de Log
+        wa_alv-bupla   = p_arq-bupla.
+* SSI - 1000017494
+        wa_alv-werks   = p_arq-werks.       " Centro
+        wa_alv-zterm   = p_arq-zterm.       " Cond.Pagamento
+        wa_alv-matnr   = p_arq-matnr.       " Material
+        wa_alv-ebeln   = p_arq-ebeln.       " Doc. Material
+
+*Início alteração - Daniela Salomão Santa Clara - 19/02/20 - SSI 9000075165
+        wa_alv-belnr   = wa_return-message_v2(10).          "Nº do Documento
+        wa_alv-gjahr   = p_arq-budat(4).       "Exercicio
+        wa_alv-deb     = lv_deb.
+        wa_alv-cred    = lv_cred.
+        wa_alv-ce_fi  = ce_fi.
+        wa_alv-it_fi   = it_fi.
+
+
+*Fim alteração - Daniela Salomão Santa Clara - 19/02/20 - SSI 9000075165
+*      ENDIF.
+
+    ENDLOOP.
+
+  ENDIF.
+  APPEND wa_alv TO t_alv.
+
+ENDFUNCTION.
+```
 
     
    - CONVERSION_EXIT_ALPHA_INPUT - 259, 327   
