@@ -125,13 +125,103 @@
      - CONVERSION_EXIT_ALPHA_INPUT - 950
      - POPUP_WITH_TABLE_DISPLAY_OK - 968   
        [Código](https://github.com/danielasalomao/ajustecarga/blob/master/FUNCTION%20POPUP_WITH_TABLE_DISPLAY_OK.txt)
- 
+
+´´´abap
+FUNCTION POPUP_WITH_TABLE_DISPLAY_OK.
+*"----------------------------------------------------------------------
+*"*"Local interface:
+*"       IMPORTING
+*"             VALUE(ENDPOS_COL)
+*"             VALUE(ENDPOS_ROW)
+*"             VALUE(STARTPOS_COL)
+*"             VALUE(STARTPOS_ROW)
+*"             VALUE(TITLETEXT)
+*"       EXPORTING
+*"             VALUE(CHOISE) LIKE  SY-TABIX
+*"       TABLES
+*"              VALUETAB
+*"       EXCEPTIONS
+*"              BREAK_OFF
+*"----------------------------------------------------------------------
+  REFRESH LISTTAB. CLEAR LISTTAB.
+
+  LOOP AT VALUETAB.
+    LISTTAB = VALUETAB.
+    APPEND LISTTAB.
+  ENDLOOP.
+
+  TITLE_TEXT = TITLETEXT.
+  CALL SCREEN 0200 STARTING AT STARTPOS_COL STARTPOS_ROW
+                   ENDING   AT ENDPOS_COL   ENDPOS_ROW.
+  CHOISE = HLINE.
+ENDFUNCTION.
+
+
+AT USER-COMMAND.
+  CASE SY-UCOMM.
+    WHEN 'SLCT'.
+      GET CURSOR FIELD HFIELD LINE HLINE.
+      IF SY-SUBRC = 0.
+        SET SCREEN 0.
+        LEAVE SCREEN.
+      ENDIF.
+    WHEN 'ABR'.
+      SET SCREEN 0.
+      RAISE BREAK_OFF.
+      LEAVE SCREEN.
+  ENDCASE.
+
+*---------------------------------------------------------------------*
+*       MODULE SET_TITLE                                              *
+*---------------------------------------------------------------------*
+*       Set the title given by calling program                        *
+*---------------------------------------------------------------------*
+
+MODULE SET_TITLE OUTPUT.
+
+  SET TITLEBAR '002' WITH TITLE_TEXT.
+
+ENDMODULE.
+
+
+*---------------------------------------------------------------------*
+*       MODULE LISTPROCESSING OUTPUT                                  *
+*---------------------------------------------------------------------*
+*       Switchs to list-processing and displays internal table data   *
+*---------------------------------------------------------------------*
+MODULE LISTPROCESSING OUTPUT.
+  LEAVE TO LIST-PROCESSING AND RETURN TO SCREEN 0000.
+  SET PF-STATUS 'EXTR'.
+  NEW-PAGE NO-TITLE .
+  LOOP AT LISTTAB.
+    IF LISTTAB+15(1) = 'S' OR LISTTAB+15(1) = 'F'.
+      IF LISTTAB+15(1) = 'S'.
+        WRITE: / LISTTAB+0(15), ICON_OKAY AS ICON.
+      ELSEIF LISTTAB+15(1) = 'F'.
+        WRITE: / LISTTAB+0(15), ICON_CANCEL AS ICON.
+      ENDIF.
+    ELSE.
+      WRITE: / LISTTAB.
+    ENDIF.
+  ENDLOOP.
+  LEAVE SCREEN.
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  SUPPRESS_DIALOG  OUTPUT
+*&---------------------------------------------------------------------*
+*       text                                                           *
+*----------------------------------------------------------------------*
+MODULE SUPPRESS_DIALOG OUTPUT.
+  SUPPRESS DIALOG.
+ENDMODULE.                             " SUPPRESS_DIALOG  OUTPUT
+´´´
+
+
  ##### O - FORM user_command
  
-  [Código](https://github.com/danielasalomao/ajustecarga/blob/master/f_user_command.txt)
-
-```abap
-
+ 
+´´´abap
 FORM user_command USING ucomm    LIKE sy-ucomm
                         selfield TYPE slis_selfield.
 
@@ -146,7 +236,7 @@ FORM user_command USING ucomm    LIKE sy-ucomm
   CLEAR ucomm.
 
 ENDFORM.                    "user_command
-```
+´´´
     
 ---    
 
